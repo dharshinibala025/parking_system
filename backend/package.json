@@ -5,6 +5,7 @@
   "main": "server.js",
   "scripts": {
     "dev": "node server.js",
+    "build": "echo 'No build step required for backend'",
     "start": "node server.js",
     "seed:admin": "node utils/seedAdmin.js",
     "seed": "node utils/seedAdmin.js"
