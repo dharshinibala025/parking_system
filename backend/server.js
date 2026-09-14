@@ -19,6 +19,23 @@ seedAdmin()
 app.use(cors({ origin: '*', credentials: true }))
 app.use(express.json())
 
+// Root Welcome Endpoint
+app.get('/', (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'Welcome to ParkEase Online Parking Slot Booking REST API 🚀',
+    health: '/api/health',
+    endpoints: {
+      auth: '/api/auth',
+      slots: '/api/slots',
+      bookings: '/api/bookings',
+      customers: '/api/customers',
+      reports: '/api/reports',
+      payments: '/api/payments',
+    },
+  })
+})
+
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   res.status(200).json({
