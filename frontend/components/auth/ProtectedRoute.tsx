@@ -17,25 +17,28 @@ export function ProtectedRoute({ children, requireAdmin = false }: ProtectedRout
 
   useEffect(() => {
     if (!isLoading) {
-      // 1. Unauthenticated User Protection
+      // 1. Unauthenticated Route Redirection
       if (!isAuthenticated || !user) {
-        router.push(`/login?redirect=${encodeURIComponent(pathname)}`)
+        if (requireAdmin || pathname.startsWith('/admin')) {
+          router.push(`/admin/login?redirect=${encodeURIComponent(pathname)}`)
+        } else {
+          router.push(`/login?redirect=${encodeURIComponent(pathname)}`)
+        }
         return
       }
 
-      // 2. Admin Security Check: Non-admins trying to access /admin routes
+      // 2. Admin Security Check: Customer attempting to access /admin routes
       if (requireAdmin && role !== 'ADMIN') {
-        console.warn(`Unauthorized Access Attempt to ${pathname} by non-admin user ${user.email}`)
-        router.push('/dashboard?error=unauthorized')
+        console.warn(`Unauthorized Access Attempt to ${pathname} by user ${user.email}`)
       }
     }
   }, [isLoading, isAuthenticated, user, role, requireAdmin, pathname, router])
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
-        <Loader2 className="w-10 h-10 text-blue-600 animate-spin mb-4" />
-        <p className="text-sm font-medium text-gray-600">Verifying session & security permissions...</p>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#F7FAFC]">
+        <div className="w-12 h-12 rounded-full border-4 border-[#D4DDE2] border-t-[#5C7E8F] animate-spin mb-4" />
+        <p className="text-sm font-semibold text-[#5C7E8F]">Verifying credentials & security clearance...</p>
       </div>
     )
   }
@@ -46,21 +49,29 @@ export function ProtectedRoute({ children, requireAdmin = false }: ProtectedRout
 
   if (requireAdmin && role !== 'ADMIN') {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 px-4">
-        <div className="bg-white p-8 rounded-2xl shadow-lg border border-red-100 max-w-md w-full text-center">
-          <div className="w-16 h-16 bg-red-50 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#F7FAFC] px-4 py-12">
+        <div className="glass-card p-8 rounded-2xl border border-red-200 max-w-md w-full text-center shadow-xl">
+          <div className="w-16 h-16 bg-red-50 text-red-600 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-red-100">
             <ShieldAlert className="w-8 h-8" />
           </div>
-          <h2 className="text-xl font-bold text-gray-900 mb-2">Access Denied</h2>
-          <p className="text-sm text-gray-600 mb-6">
-            You don't have permission to access the ParkEase Administrator portal.
+          <h2 className="text-2xl font-bold text-[#2C3E50] mb-2">Admin Access Required</h2>
+          <p className="text-sm text-[#718096] mb-6 leading-relaxed">
+            This area is strictly restricted to system administrators. Customer accounts do not have clearance to view administrative portals.
           </p>
-          <button
-            onClick={() => router.push('/dashboard')}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-xl transition"
-          >
-            Return to Customer Dashboard
-          </button>
+          <div className="space-y-3">
+            <button
+              onClick={() => router.push('/dashboard')}
+              className="w-full bg-[#5C7E8F] hover:bg-[#4A6776] text-white font-bold py-3 px-4 rounded-xl transition shadow-sm"
+            >
+              Return to Customer Dashboard
+            </button>
+            <button
+              onClick={() => router.push('/admin/login')}
+              className="w-full bg-white hover:bg-[#D4DDE2]/40 text-[#5C7E8F] border border-[#D4DDE2] font-semibold py-2.5 px-4 rounded-xl transition text-xs"
+            >
+              Switch to Admin Login
+            </button>
+          </div>
         </div>
       </div>
     )

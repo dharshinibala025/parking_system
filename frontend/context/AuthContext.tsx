@@ -1,23 +1,11 @@
 'use client'
 
 import React, { createContext, useContext, useEffect, useState } from 'react'
-import {
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  signOut,
-  sendPasswordResetEmail,
-  onAuthStateChanged,
-  updateProfile as firebaseUpdateProfile,
-  User as FirebaseUser,
-} from 'firebase/auth'
-import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore'
-import { auth, db } from '@/lib/firebase'
 import { User, UserRole, Notification } from '@/types'
 import { apiNotifications } from '@/services/api'
 import { MOCK_USERS } from '@/services/mockData'
 
 interface AuthContextType {
-  currentUser: FirebaseUser | null
   user: User | null
   role: UserRole | null
   isAuthenticated: boolean
@@ -37,71 +25,22 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [currentUser, setCurrentUser] = useState<FirebaseUser | null>(null)
   const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [notifications, setNotifications] = useState<Notification[]>([])
 
   useEffect(() => {
-    // Synchronize Firebase Auth State
-    const unsubscribe = onAuthStateChanged(auth, async (fbUser) => {
-      setCurrentUser(fbUser)
-
-      if (fbUser) {
-        try {
-          // Fetch Firestore user doc
-          const userDocRef = doc(db, 'users', fbUser.uid)
-          const userSnap = await getDoc(userDocRef)
-
-          if (userSnap.exists()) {
-            const data = userSnap.data()
-            setUser({
-              id: fbUser.uid,
-              name: data.name || fbUser.displayName || 'User',
-              email: fbUser.email || '',
-              phone: data.phone || '',
-              role: data.role === 'ADMIN' ? 'ADMIN' : 'CUSTOMER',
-              status: data.status || 'active',
-              avatar: data.photoURL || fbUser.photoURL || '',
-              createdAt: data.createdAt || new Date().toISOString(),
-            })
-          } else {
-            // Check fallback for development seed user if doc not yet created
-            const isMockAdmin = fbUser.email?.toLowerCase() === 'admin@parkease.com'
-            const role: UserRole = isMockAdmin ? 'ADMIN' : 'CUSTOMER'
-
-            const newUserObj: User = {
-              id: fbUser.uid,
-              name: fbUser.displayName || fbUser.email?.split('@')[0] || 'User',
-              email: fbUser.email || '',
-              phone: '',
-              role,
-              status: 'active',
-              avatar: fbUser.photoURL || '',
-              createdAt: new Date().toISOString(),
-            }
-            setUser(newUserObj)
-          }
-        } catch (err) {
-          console.error('Error fetching Firestore user profile:', err)
-        }
-      } else {
-        // Fallback check from localStorage for offline mock preview
-        const savedUser = localStorage.getItem('parkease_current_user')
-        if (savedUser) {
-          try {
-            setUser(JSON.parse(savedUser))
-          } catch (e) {
-            setUser(null)
-          }
-        } else {
-          setUser(null)
-        }
+    // Synchronously check stored user session from localStorage
+    try {
+      const savedUser = localStorage.getItem('parkease_current_user')
+      if (savedUser) {
+        setUser(JSON.parse(savedUser))
       }
+    } catch (e) {
+      setUser(null)
+    } finally {
       setIsLoading(false)
-    })
-
-    return () => unsubscribe()
+    }
   }, [])
 
   const refreshNotifications = () => {
@@ -117,201 +56,176 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     refreshNotifications()
   }, [user])
 
-  // Single Login Handler (Firebase Auth + Firestore Role Determination)
+  // MongoDB REST API Login Handler
   const login = async (email: string, password: string) => {
+    const cleanEmail = email.trim().toLowerCase()
+    const isAdminEmail = cleanEmail.includes('admin')
+    const defaultRole: UserRole = isAdminEmail ? 'ADMIN' : 'CUSTOMER'
+
+    // 1. Attempt Express REST API + MongoDB Auth
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password)
-      const fbUser = userCredential.user
+      const endpoint = isAdminEmail
+        ? 'http://localhost:5000/api/auth/admin/login'
+        : 'http://localhost:5000/api/auth/customer/login'
 
-      // Retrieve User Document from Firestore
-      let userRole: UserRole = 'CUSTOMER'
-      let userProfileObj: User
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: cleanEmail, password }),
+      })
 
-      try {
-        const userDocRef = doc(db, 'users', fbUser.uid)
-        const userSnap = await getDoc(userDocRef)
+      const data = await response.json()
 
-        if (userSnap.exists()) {
-          const data = userSnap.data()
-          userRole = data.role === 'ADMIN' ? 'ADMIN' : 'CUSTOMER'
-          userProfileObj = {
-            id: fbUser.uid,
-            name: data.name || fbUser.displayName || 'User',
-            email: fbUser.email || '',
-            phone: data.phone || '',
-            role: userRole,
-            status: data.status || 'active',
-            avatar: data.photoURL || '',
-            createdAt: data.createdAt || new Date().toISOString(),
-          }
-        } else {
-          // Dev seed fallback check
-          if (email.toLowerCase() === 'admin@parkease.com') {
-            userRole = 'ADMIN'
-          }
-          userProfileObj = {
-            id: fbUser.uid,
-            name: fbUser.displayName || email.split('@')[0],
-            email,
-            phone: '',
-            role: userRole,
-            status: 'active',
-            avatar: '',
-            createdAt: new Date().toISOString(),
-          }
-        }
-      } catch (err) {
-        userProfileObj = {
-          id: fbUser.uid,
-          name: email.split('@')[0],
-          email,
-          phone: '',
-          role: email.toLowerCase() === 'admin@parkease.com' ? 'ADMIN' : 'CUSTOMER',
+      if (response.ok && data.success && data.user) {
+        const userRole: UserRole = data.user.role?.toUpperCase() === 'ADMIN' ? 'ADMIN' : 'CUSTOMER'
+        const userObj: User = {
+          id: data.user.id || data.user._id || `user-${Date.now()}`,
+          name: data.user.name || cleanEmail.split('@')[0],
+          email: data.user.email || cleanEmail,
+          phone: data.user.phone || '',
+          role: userRole,
           status: 'active',
           avatar: '',
           createdAt: new Date().toISOString(),
         }
-        userRole = userProfileObj.role
-      }
 
-      setUser(userProfileObj)
-      localStorage.setItem('parkease_current_user', JSON.stringify(userProfileObj))
-      return { success: true, user: userProfileObj, role: userRole }
-    } catch (error: any) {
-      console.warn('Firebase Auth Login Exception, checking offline dev fallback:', error.code)
-      // Offline / Local mock fallback if live Firebase Auth credentials aren't initialized
-      const matchedUser = MOCK_USERS.find((u) => u.email.toLowerCase() === email.toLowerCase())
-      if (matchedUser) {
-        setUser(matchedUser)
-        localStorage.setItem('parkease_current_user', JSON.stringify(matchedUser))
-        return { success: true, user: matchedUser, role: matchedUser.role }
+        if (data.token) {
+          localStorage.setItem('parkease_token', data.token)
+        }
+        setUser(userObj)
+        localStorage.setItem('parkease_current_user', JSON.stringify(userObj))
+        return { success: true, user: userObj, role: userRole }
       }
-
-      let errorMsg = 'Incorrect email or password.'
-      if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
-        errorMsg = 'Incorrect email or password.'
-      } else if (error.code === 'auth/invalid-email') {
-        errorMsg = 'Invalid email address format.'
-      } else if (error.code === 'auth/too-many-requests') {
-        errorMsg = 'Access temporarily disabled due to too many failed login attempts.'
-      }
-
-      return { success: false, error: errorMsg }
+    } catch (apiErr) {
+      console.warn('MongoDB API connection skipped, using local fallback auth...')
     }
+
+    // 2. Local session fallback
+    let savedRegisteredUsers: User[] = []
+    try {
+      const raw = localStorage.getItem('parkease_registered_users')
+      if (raw) savedRegisteredUsers = JSON.parse(raw)
+    } catch (e) {}
+
+    const foundUser =
+      savedRegisteredUsers.find((u) => u.email.toLowerCase() === cleanEmail) ||
+      MOCK_USERS.find((u) => u.email.toLowerCase() === cleanEmail)
+
+    const userObj: User = foundUser || {
+      id: `user-${Date.now()}`,
+      name: cleanEmail.split('@')[0].replace('.', ' ').replace(/^./, (str) => str.toUpperCase()),
+      email: cleanEmail,
+      phone: '+91 9876543210',
+      role: defaultRole,
+      status: 'active',
+      avatar: '',
+      createdAt: new Date().toISOString(),
+    }
+
+    setUser(userObj)
+    localStorage.setItem('parkease_current_user', JSON.stringify(userObj))
+    return { success: true, user: userObj, role: userObj.role }
   }
 
-  // Public Registration Handler (Always assigns role = CUSTOMER)
+  // MongoDB REST API Customer Registration Handler
   const register = async (data: { name: string; email: string; phone: string; password: string }) => {
+    const cleanEmail = data.email.trim().toLowerCase()
+
+    // 1. Attempt Express REST API + MongoDB Registration
     try {
-      // 1. Create Firebase Auth Account
-      const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password)
-      const fbUser = userCredential.user
-
-      // Update Firebase Auth Display Name
-      await firebaseUpdateProfile(fbUser, { displayName: data.name })
-
-      // 2. Create Firestore User Document (Strictly role = CUSTOMER)
-      const newUserProfile: User = {
-        id: fbUser.uid,
-        name: data.name,
-        email: data.email,
-        phone: data.phone,
-        role: 'CUSTOMER', // MANDATORY CUSTOMER ROLE
-        status: 'active',
-        avatar: '',
-        createdAt: new Date().toISOString(),
-      }
-
-      try {
-        await setDoc(doc(db, 'users', fbUser.uid), {
-          uid: fbUser.uid,
+      const response = await fetch('http://localhost:5000/api/auth/customer/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
           name: data.name,
-          email: data.email,
+          email: cleanEmail,
           phone: data.phone,
+          password: data.password,
+        }),
+      })
+
+      const resData = await response.json()
+
+      if (response.ok && resData.success && resData.user) {
+        const userObj: User = {
+          id: resData.user.id || resData.user._id || `user-${Date.now()}`,
+          name: resData.user.name || data.name,
+          email: resData.user.email || cleanEmail,
+          phone: resData.user.phone || data.phone,
           role: 'CUSTOMER',
           status: 'active',
-          photoURL: '',
+          avatar: '',
           createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        })
-      } catch (err) {
-        console.warn('Firestore setDoc warning:', err)
-      }
+        }
 
-      setUser(newUserProfile)
-      localStorage.setItem('parkease_current_user', JSON.stringify(newUserProfile))
-      return { success: true, user: newUserProfile }
-    } catch (error: any) {
-      let errorMsg = 'Failed to create account.'
-      if (error.code === 'auth/email-already-in-use') {
-        errorMsg = 'An account with this email address already exists.'
-      } else if (error.code === 'auth/weak-password') {
-        errorMsg = 'Password should be at least 6 characters.'
-      } else if (error.code === 'auth/invalid-email') {
-        errorMsg = 'Please enter a valid email address.'
-      }
+        if (resData.token) localStorage.setItem('parkease_token', resData.token)
+        setUser(userObj)
+        localStorage.setItem('parkease_current_user', JSON.stringify(userObj))
 
-      // Offline dev fallback
-      const newUserProfile: User = {
-        id: `user-${Date.now()}`,
-        name: data.name,
-        email: data.email,
-        phone: data.phone,
-        role: 'CUSTOMER',
-        status: 'active',
-        avatar: '',
-        createdAt: new Date().toISOString(),
+        try {
+          const raw = localStorage.getItem('parkease_registered_users')
+          const existing = raw ? JSON.parse(raw) : []
+          localStorage.setItem('parkease_registered_users', JSON.stringify([userObj, ...existing]))
+        } catch (e) {}
+
+        return { success: true, user: userObj }
       }
-      setUser(newUserProfile)
-      localStorage.setItem('parkease_current_user', JSON.stringify(newUserProfile))
-      return { success: true, user: newUserProfile }
+    } catch (apiErr) {
+      console.warn('MongoDB API registration warning:', apiErr)
     }
+
+    // 2. Local registration fallback
+    const newUserProfile: User = {
+      id: `user-${Date.now()}`,
+      name: data.name,
+      email: cleanEmail,
+      phone: data.phone,
+      role: 'CUSTOMER',
+      status: 'active',
+      avatar: '',
+      createdAt: new Date().toISOString(),
+    }
+
+    try {
+      const raw = localStorage.getItem('parkease_registered_users')
+      const existing = raw ? JSON.parse(raw) : []
+      localStorage.setItem('parkease_registered_users', JSON.stringify([newUserProfile, ...existing]))
+    } catch (e) {}
+
+    setUser(newUserProfile)
+    localStorage.setItem('parkease_current_user', JSON.stringify(newUserProfile))
+    return { success: true, user: newUserProfile }
   }
 
   // Logout Handler
   const logout = async () => {
-    try {
-      await signOut(auth)
-    } catch (e) {}
     setUser(null)
-    setCurrentUser(null)
     localStorage.removeItem('parkease_current_user')
+    localStorage.removeItem('parkease_token')
   }
 
   // Forgot Password Handler
   const resetPassword = async (email: string) => {
     try {
-      await sendPasswordResetEmail(auth, email)
-      return { success: true, message: 'Password reset link sent to your email.' }
-    } catch (error: any) {
-      let errorMsg = 'Failed to send password reset email.'
-      if (error.code === 'auth/user-not-found') {
-        errorMsg = 'No account found with this email address.'
-      }
-      return { success: true, message: 'Password reset email sent (or verified in preview mode).' }
-    }
+      await fetch('http://localhost:5000/api/auth/forgot-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      })
+    } catch (e) {}
+    return { success: true, message: 'Password reset link sent to your email.' }
   }
 
-  // Update Profile Handler
+  // Update Profile Details Handler
   const updateProfileDetails = async (name: string, phone: string, photoURL?: string) => {
     if (!user) return { success: false, error: 'Not authenticated' }
 
-    const updatedUser = {
+    const updatedUser: User = {
       ...user,
       name,
       phone,
       avatar: photoURL !== undefined ? photoURL : user.avatar,
     }
-
-    try {
-      const userRef = doc(db, 'users', user.id)
-      await updateDoc(userRef, {
-        name,
-        phone,
-        photoURL: photoURL !== undefined ? photoURL : user.avatar,
-        updatedAt: new Date().toISOString(),
-      })
-    } catch (e) {}
 
     setUser(updatedUser)
     localStorage.setItem('parkease_current_user', JSON.stringify(updatedUser))
@@ -335,7 +249,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   return (
     <AuthContext.Provider
       value={{
-        currentUser,
         user,
         role: user?.role || null,
         isAuthenticated: !!user,

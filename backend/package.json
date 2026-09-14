@@ -1,27 +1,26 @@
 {
   "name": "parkease-backend",
   "version": "1.0.0",
-  "description": "ParkEase Online Parking Slot Booking and Management System - Node.js Express REST API with Firebase Admin SDK",
-  "main": "dist/server.js",
+  "description": "ParkEase Online Parking Slot Booking and Management System - Node.js Express REST API with MongoDB & Mongoose",
+  "main": "server.js",
   "scripts": {
-    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
-    "build": "tsc",
-    "start": "node dist/server.js",
-    "seed:admin": "ts-node scripts/seed-admin.ts",
-    "seed:data": "ts-node scripts/seed-data.ts"
+    "dev": "node server.js",
+    "start": "node server.js",
+    "seed:admin": "node utils/seedAdmin.js",
+    "seed": "node utils/seedAdmin.js"
   },
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
-    "firebase-admin": "^13.1.0"
+    "express-rate-limit": "^7.5.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.10.0",
+    "qrcode": "^1.5.4"
   },
   "devDependencies": {
-    "@types/cors": "^2.8.17",
-    "@types/express": "^5.0.0",
-    "@types/node": "^22.13.9",
-    "ts-node": "^10.9.2",
-    "ts-node-dev": "^2.0.0",
-    "typescript": "^5.7.3"
+    "@types/node": "^20.11.0",
+    "nodemon": "^3.1.9"
   }
 }

@@ -1,19 +1,17 @@
 import { ParkingLot, ParkingSlot, Vehicle, Booking, Notification, PricingConfig, User, ReportStats } from '@/types'
 import { MOCK_PARKING_LOTS, MOCK_SLOTS, MOCK_VEHICLES, MOCK_BOOKINGS, MOCK_NOTIFICATIONS, MOCK_PRICING, MOCK_USERS } from './mockData'
-import { auth } from '@/lib/firebase'
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
 
-// Helper to get Firebase ID token for Authorization header
+// Helper to get JWT token for Authorization header sent to MongoDB Express API
 async function getAuthHeader(): Promise<Record<string, string>> {
   try {
-    const user = auth.currentUser
-    if (user) {
-      const token = await user.getIdToken()
+    const token = typeof window !== 'undefined' ? localStorage.getItem('parkease_token') : null
+    if (token) {
       return { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }
     }
   } catch (e) {
-    console.warn('Unable to get Firebase ID token:', e)
+    console.warn('Unable to retrieve auth token:', e)
   }
   return { 'Content-Type': 'application/json' }
 }

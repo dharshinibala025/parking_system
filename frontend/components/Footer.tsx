@@ -2,48 +2,49 @@
 
 import React from 'react'
 import Link from 'next/link'
-import { Shield, Sparkles } from 'lucide-react'
+import { usePathname } from 'next/navigation'
+import { Sparkles, Shield } from 'lucide-react'
 
 export function Footer() {
+  const pathname = usePathname()
+
+  // Hide footer completely on standalone auth pages
+  const isAuthPage = ['/login', '/register', '/admin/login', '/forgot-password'].includes(pathname)
+  if (isAuthPage) {
+    return null
+  }
+
   return (
-    <footer className="border-t border-border bg-slate-900 text-slate-100">
-      <div className="mx-auto max-w-7xl px-5 py-14 lg:px-8">
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1fr]">
-          {/* Column 1: Brand */}
-          <div>
-            <Link href="/" className="flex items-center gap-2.5">
-              <span className="flex size-9 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
-                <span className="font-bold">P</span>
+    <footer className="bg-[#1E2A30] text-white pt-16 pb-12 border-t border-[#B9C7CF]/20">
+      <div className="mx-auto max-w-7xl px-6 lg:px-10">
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+          {/* Brand Column */}
+          <div className="space-y-4">
+            <Link href="/" className="flex items-center gap-3 group">
+              <span className="flex size-10 items-center justify-center rounded-xl bg-[#42606F] text-white font-extrabold shadow-sm transition group-hover:bg-[#354E5A]">
+                <Sparkles className="size-5" />
               </span>
-              <span className="text-xl font-bold tracking-tight text-white">
-                Park<span className="text-primary">Ease</span>
+              <span className="text-2xl font-black tracking-tight text-white">
+                Park<span className="text-[#B9C7CF]">Ease</span>
               </span>
             </Link>
-            <p className="mt-4 max-w-xs text-sm leading-6 text-slate-400">
-              Find Your Spot. Park With Ease. Modern automated parking slot reservation & management platform.
+            <p className="text-sm leading-relaxed text-[#B9C7CF]/90 max-w-xs font-normal">
+              Seamless, smart parking slot booking and management with real-time slot availability.
             </p>
-            <div className="mt-4 flex items-center gap-2 text-xs text-slate-400">
-              <Sparkles className="size-4 text-primary" /> Full-Stack College Mini-Project Demo
-            </div>
           </div>
 
-          {/* Column 2: Product */}
+          {/* Column 1: Product */}
           <div>
-            <h4 className="text-sm font-bold text-white uppercase tracking-wider">Product</h4>
-            <ul className="mt-4 space-y-2.5 text-sm text-slate-400">
+            <h4 className="text-xs font-bold text-[#B9C7CF] uppercase tracking-wider mb-4">Product</h4>
+            <ul className="space-y-3 text-sm text-[#B9C7CF]/80 font-medium">
               <li>
-                <Link href="/find-parking" className="hover:text-white transition">
-                  Find Parking
+                <Link href="/availability" className="hover:text-white transition">
+                  Live Slot Availability
                 </Link>
               </li>
               <li>
-                <Link href="/how-it-works" className="hover:text-white transition">
-                  How It Works
-                </Link>
-              </li>
-              <li>
-                <Link href="/pricing" className="hover:text-white transition">
-                  Pricing Plans
+                <Link href="/book" className="hover:text-white transition">
+                  Book a Slot
                 </Link>
               </li>
               <li>
@@ -54,13 +55,18 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Column 3: Company */}
+          {/* Column 2: Quick Links */}
           <div>
-            <h4 className="text-sm font-bold text-white uppercase tracking-wider">Company</h4>
-            <ul className="mt-4 space-y-2.5 text-sm text-slate-400">
+            <h4 className="text-xs font-bold text-[#B9C7CF] uppercase tracking-wider mb-4">Company</h4>
+            <ul className="space-y-3 text-sm text-[#B9C7CF]/80 font-medium">
               <li>
                 <Link href="/about" className="hover:text-white transition">
-                  About Us
+                  About ParkEase
+                </Link>
+              </li>
+              <li>
+                <Link href="/how-it-works" className="hover:text-white transition">
+                  How It Works
                 </Link>
               </li>
               <li>
@@ -68,54 +74,43 @@ export function Footer() {
                   Contact Support
                 </Link>
               </li>
-              <li>
-                <Link href="/admin" className="hover:text-white transition flex items-center gap-1.5 text-primary">
-                  <Shield className="size-3.5" /> Admin Portal
-                </Link>
-              </li>
             </ul>
           </div>
 
-          {/* Column 4: Legal & Support */}
+          {/* Column 3: Portal Access */}
           <div>
-            <h4 className="text-sm font-bold text-white uppercase tracking-wider">Support</h4>
-            <ul className="mt-4 space-y-2.5 text-sm text-slate-400">
+            <h4 className="text-xs font-bold text-[#B9C7CF] uppercase tracking-wider mb-4">Portals</h4>
+            <ul className="space-y-3 text-sm text-[#B9C7CF]/80 font-medium">
               <li>
-                <a href="#" className="hover:text-white transition">
-                  Help Center
-                </a>
+                <Link href="/login" className="hover:text-white transition">
+                  Customer Portal
+                </Link>
               </li>
               <li>
-                <a href="#" className="hover:text-white transition">
-                  Privacy Policy
-                </a>
+                <Link href="/register" className="hover:text-white transition">
+                  Customer Registration
+                </Link>
               </li>
-              <li>
-                <a href="#" className="hover:text-white transition">
-                  Terms of Service
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-white transition">
-                  Parking Partner API
-                </a>
+              <li className="pt-2 border-t border-[#B9C7CF]/20">
+                {/* Discreet Admin Login Link */}
+                <Link
+                  href="/admin/login"
+                  className="inline-flex items-center gap-1.5 text-xs text-[#7D7D7D] hover:text-[#B9C7CF] transition opacity-80 hover:opacity-100"
+                >
+                  <Shield className="size-3.5 text-[#7D7D7D]" />
+                  <span>Admin Access</span>
+                </Link>
               </li>
             </ul>
           </div>
         </div>
 
-        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-slate-800 pt-8 text-xs text-slate-500 sm:flex-row">
+        <div className="mt-12 pt-8 border-t border-[#B9C7CF]/20 text-xs text-[#7D7D7D] flex flex-col sm:flex-row items-center justify-between gap-4">
           <p>© 2026 ParkEase System. All rights reserved.</p>
-          <div className="flex gap-6">
-            <a href="#" className="hover:text-slate-400 transition">
-              Privacy
-            </a>
-            <a href="#" className="hover:text-slate-400 transition">
-              Terms
-            </a>
-            <a href="#" className="hover:text-slate-400 transition">
-              Security
-            </a>
+          <div className="flex items-center gap-6 text-[#7D7D7D] font-medium">
+            <Link href="/about" className="hover:text-white transition">Privacy Policy</Link>
+            <Link href="/about" className="hover:text-white transition">Terms of Service</Link>
+            <Link href="/admin/login" className="hover:text-white transition text-[11px] text-slate-400">Admin Login</Link>
           </div>
         </div>
       </div>

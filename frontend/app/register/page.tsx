@@ -7,13 +7,14 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { useAuth } from '@/context/AuthContext'
-import { Car, User, Mail, Phone, Lock, ArrowRight, Loader2, AlertCircle } from 'lucide-react'
+import { Sparkles, User, Mail, Phone, Lock, Car, ArrowRight, Loader2, AlertCircle } from 'lucide-react'
 
 const registerSchema = z
   .object({
     name: z.string().min(2, 'Full Name must be at least 2 characters'),
     email: z.string().min(1, 'Email is required').email('Please enter a valid email address'),
     phone: z.string().min(10, 'Phone number must be at least 10 digits'),
+    vehicleNumber: z.string().optional(),
     password: z.string().min(6, 'Password must be at least 6 characters'),
     confirmPassword: z.string().min(6, 'Confirm password is required'),
   })
@@ -41,6 +42,7 @@ export default function RegisterPage() {
       name: '',
       email: '',
       phone: '',
+      vehicleNumber: '',
       password: '',
       confirmPassword: '',
     },
@@ -51,7 +53,6 @@ export default function RegisterPage() {
     setIsSubmitting(true)
 
     try {
-      // Automatic CUSTOMER role assignment (No role selector in registration)
       const result = await registerAuth({
         name: data.name,
         email: data.email,
@@ -60,7 +61,19 @@ export default function RegisterPage() {
       })
 
       if (result.success) {
-        // Automatically redirect to customer dashboard
+        if (data.vehicleNumber) {
+          try {
+            const savedVehicles = JSON.parse(localStorage.getItem('parkease_vehicles') || '[]')
+            savedVehicles.push({
+              id: `v-${Date.now()}`,
+              userId: result.user?.id || 'new-user',
+              plateNumber: data.vehicleNumber.toUpperCase(),
+              type: '4W',
+              isDefault: true,
+            })
+            localStorage.setItem('parkease_vehicles', JSON.stringify(savedVehicles))
+          } catch (e) {}
+        }
         router.push('/dashboard')
       } else {
         setServerError(result.error || 'Registration failed. Please try again.')
@@ -73,27 +86,30 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] bg-slate-50 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <Link href="/" className="flex justify-center items-center gap-2.5 mb-2">
-          <div className="w-12 h-12 rounded-2xl bg-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/25">
-            <Car className="w-7 h-7" />
-          </div>
-        </Link>
-        <h2 className="text-center text-3xl font-extrabold text-slate-900 tracking-tight">
-          Create Your ParkEase Account
-        </h2>
-        <p className="mt-2 text-center text-sm text-slate-600">
-          Book hassle-free parking spots near your destination in seconds.
-        </p>
-      </div>
+    <div className="relative min-h-[calc(100vh-4rem)] flex items-center justify-center bg-[#F7F9FA] px-4 py-12 overflow-hidden">
+      {/* Ambient Mesh Background */}
+      <div className="absolute top-10 left-1/4 w-96 h-96 rounded-full bg-[#42606F]/20 blur-3xl animate-ambient-glow pointer-events-none" />
+      <div className="absolute bottom-10 right-10 w-[28rem] h-[28rem] rounded-full bg-[#B9C7CF]/50 blur-3xl animate-ambient-pulse pointer-events-none" />
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-6 shadow-xl shadow-slate-200/50 rounded-3xl border border-slate-100 sm:px-10">
-          
+      <div className="relative z-10 w-full max-w-lg">
+        <div className="glass-card rounded-3xl p-8 sm:p-10 shadow-2xl border border-[#B9C7CF]">
+          {/* Header */}
+          <div className="flex flex-col items-center text-center mb-6">
+            <div className="w-14 h-14 rounded-2xl bg-[#42606F] text-white flex items-center justify-center shadow-lg mb-3">
+              <Car className="w-7 h-7" />
+            </div>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#42606F]/10 text-[#42606F] text-xs font-bold uppercase tracking-wider mb-2">
+              <Sparkles className="w-3.5 h-3.5" /> Customer Self-Registration
+            </span>
+            <h1 className="text-3xl font-black text-[#1E2A30] tracking-tight">Create Customer Account</h1>
+            <p className="text-sm text-[#7D7D7D] mt-1">
+              Join ParkEase to reserve slots, manage vehicles & park easily
+            </p>
+          </div>
+
           {serverError && (
-            <div className="mb-6 p-4 rounded-2xl bg-red-50 border border-red-100 flex items-start gap-3 text-red-700 text-sm">
-              <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
+            <div className="mb-6 p-4 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-xs font-semibold flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
               <div>
                 <p className="font-semibold">Registration Error</p>
                 <p className="text-xs text-red-600 mt-0.5">{serverError}</p>
@@ -104,20 +120,18 @@ export default function RegisterPage() {
           <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
             {/* Full Name */}
             <div>
-              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
-                Full Name
+              <label className="block text-xs font-bold text-[#1E2A30] uppercase tracking-wider mb-1">
+                Full Name *
               </label>
-              <div className="relative rounded-xl shadow-xs">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                  <User className="w-5 h-5" />
-                </div>
+              <div className="relative">
+                <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-[#7D7D7D]" />
                 <input
                   type="text"
                   placeholder="Arun Kumar"
                   {...register('name')}
-                  className={`block w-full pl-10 pr-4 py-2.5 bg-slate-50 border ${
-                    errors.name ? 'border-red-300 focus:ring-red-500' : 'border-slate-200 focus:ring-blue-500'
-                  } rounded-xl text-slate-900 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:bg-white transition`}
+                  className={`w-full bg-white/90 border ${
+                    errors.name ? 'border-red-300' : 'border-[#B9C7CF]'
+                  } rounded-xl pl-11 pr-4 py-2.5 text-sm text-[#1E2A30] placeholder-[#7D7D7D] focus:outline-none focus:ring-2 focus:ring-[#42606F] transition`}
                 />
               </div>
               {errors.name && <p className="mt-1 text-xs text-red-600">{errors.name.message}</p>}
@@ -125,88 +139,98 @@ export default function RegisterPage() {
 
             {/* Email Address */}
             <div>
-              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
-                Email Address
+              <label className="block text-xs font-bold text-[#1E2A30] uppercase tracking-wider mb-1">
+                Email Address *
               </label>
-              <div className="relative rounded-xl shadow-xs">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                  <Mail className="w-5 h-5" />
-                </div>
+              <div className="relative">
+                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-[#7D7D7D]" />
                 <input
                   type="email"
-                  placeholder="name@example.com"
+                  placeholder="customer@example.com"
                   {...register('email')}
-                  className={`block w-full pl-10 pr-4 py-2.5 bg-slate-50 border ${
-                    errors.email ? 'border-red-300 focus:ring-red-500' : 'border-slate-200 focus:ring-blue-500'
-                  } rounded-xl text-slate-900 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:bg-white transition`}
+                  className={`w-full bg-white/90 border ${
+                    errors.email ? 'border-red-300' : 'border-[#B9C7CF]'
+                  } rounded-xl pl-11 pr-4 py-2.5 text-sm text-[#1E2A30] placeholder-[#7D7D7D] focus:outline-none focus:ring-2 focus:ring-[#42606F] transition`}
                 />
               </div>
               {errors.email && <p className="mt-1 text-xs text-red-600">{errors.email.message}</p>}
             </div>
 
-            {/* Phone Number */}
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
-                Phone Number
-              </label>
-              <div className="relative rounded-xl shadow-xs">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                  <Phone className="w-5 h-5" />
+            {/* Phone & Vehicle Number grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-bold text-[#1E2A30] uppercase tracking-wider mb-1">
+                  Phone Number *
+                </label>
+                <div className="relative">
+                  <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#7D7D7D]" />
+                  <input
+                    type="tel"
+                    placeholder="+91 9876543210"
+                    {...register('phone')}
+                    className={`w-full bg-white/90 border ${
+                      errors.phone ? 'border-red-300' : 'border-[#B9C7CF]'
+                    } rounded-xl pl-10 pr-3 py-2.5 text-sm text-[#1E2A30] placeholder-[#7D7D7D] focus:outline-none focus:ring-2 focus:ring-[#42606F] transition`}
+                  />
                 </div>
-                <input
-                  type="tel"
-                  placeholder="+91 9876543210"
-                  {...register('phone')}
-                  className={`block w-full pl-10 pr-4 py-2.5 bg-slate-50 border ${
-                    errors.phone ? 'border-red-300 focus:ring-red-500' : 'border-slate-200 focus:ring-blue-500'
-                  } rounded-xl text-slate-900 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:bg-white transition`}
-                />
+                {errors.phone && <p className="mt-1 text-xs text-red-600">{errors.phone.message}</p>}
               </div>
-              {errors.phone && <p className="mt-1 text-xs text-red-600">{errors.phone.message}</p>}
+
+              <div>
+                <label className="block text-xs font-bold text-[#1E2A30] uppercase tracking-wider mb-1">
+                  Vehicle Plate # (Optional)
+                </label>
+                <div className="relative">
+                  <Car className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#7D7D7D]" />
+                  <input
+                    type="text"
+                    placeholder="KA 01 AB 1234"
+                    {...register('vehicleNumber')}
+                    className="w-full bg-white/90 border border-[#B9C7CF] rounded-xl pl-10 pr-3 py-2.5 text-sm text-[#1E2A30] placeholder-[#7D7D7D] focus:outline-none focus:ring-2 focus:ring-[#42606F] transition uppercase"
+                  />
+                </div>
+              </div>
             </div>
 
-            {/* Password */}
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
-                Password
-              </label>
-              <div className="relative rounded-xl shadow-xs">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                  <Lock className="w-5 h-5" />
+            {/* Password & Confirm Password grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-bold text-[#1E2A30] uppercase tracking-wider mb-1">
+                  Password *
+                </label>
+                <div className="relative">
+                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#7D7D7D]" />
+                  <input
+                    type="password"
+                    placeholder="••••••••"
+                    {...register('password')}
+                    className={`w-full bg-white/90 border ${
+                      errors.password ? 'border-red-300' : 'border-[#B9C7CF]'
+                    } rounded-xl pl-10 pr-3 py-2.5 text-sm text-[#1E2A30] placeholder-[#7D7D7D] focus:outline-none focus:ring-2 focus:ring-[#42606F] transition`}
+                  />
                 </div>
-                <input
-                  type="password"
-                  placeholder="••••••••"
-                  {...register('password')}
-                  className={`block w-full pl-10 pr-4 py-2.5 bg-slate-50 border ${
-                    errors.password ? 'border-red-300 focus:ring-red-500' : 'border-slate-200 focus:ring-blue-500'
-                  } rounded-xl text-slate-900 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:bg-white transition`}
-                />
+                {errors.password && <p className="mt-1 text-xs text-red-600">{errors.password.message}</p>}
               </div>
-              {errors.password && <p className="mt-1 text-xs text-red-600">{errors.password.message}</p>}
-            </div>
 
-            {/* Confirm Password */}
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
-                Confirm Password
-              </label>
-              <div className="relative rounded-xl shadow-xs">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                  <Lock className="w-5 h-5" />
+              <div>
+                <label className="block text-xs font-bold text-[#1E2A30] uppercase tracking-wider mb-1">
+                  Confirm Password *
+                </label>
+                <div className="relative">
+                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#7D7D7D]" />
+                  <input
+                    type="password"
+                    placeholder="••••••••"
+                    {...register('confirmPassword')}
+                    className={`w-full bg-white/90 border ${
+                      errors.confirmPassword ? 'border-red-300' : 'border-[#B9C7CF]'
+                    } rounded-xl pl-10 pr-3 py-2.5 text-sm text-[#1E2A30] placeholder-[#7D7D7D] focus:outline-none focus:ring-2 focus:ring-[#42606F] transition`}
+                  />
                 </div>
-                <input
-                  type="password"
-                  placeholder="••••••••"
-                  {...register('confirmPassword')}
-                  className={`block w-full pl-10 pr-4 py-2.5 bg-slate-50 border ${
-                    errors.confirmPassword ? 'border-red-300 focus:ring-red-500' : 'border-slate-200 focus:ring-blue-500'
-                  } rounded-xl text-slate-900 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:bg-white transition`}
-                />
+                {errors.confirmPassword && (
+                  <p className="mt-1 text-xs text-red-600">{errors.confirmPassword.message}</p>
+                )}
               </div>
-              {errors.confirmPassword && (
-                <p className="mt-1 text-xs text-red-600">{errors.confirmPassword.message}</p>
-              )}
             </div>
 
             {/* Submit Button */}
@@ -214,16 +238,16 @@ export default function RegisterPage() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full flex justify-center items-center gap-2 py-3 px-4 border border-transparent rounded-xl shadow-md shadow-blue-500/20 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 transition"
+                className="w-full bg-[#42606F] hover:bg-[#354E5A] text-white font-bold py-3.5 px-6 rounded-xl transition shadow-lg flex items-center justify-center gap-2 disabled:opacity-50"
               >
                 {isSubmitting ? (
                   <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    Creating account...
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    Creating Account...
                   </>
                 ) : (
                   <>
-                    Create Account
+                    <span>Complete Registration</span>
                     <ArrowRight className="w-4 h-4" />
                   </>
                 )}
@@ -231,14 +255,13 @@ export default function RegisterPage() {
             </div>
           </form>
 
-          {/* Login Link */}
-          <div className="mt-6 text-center text-xs text-slate-600">
-            Already have an account?{' '}
-            <Link href="/login" className="font-semibold text-blue-600 hover:text-blue-700 hover:underline">
-              Sign in
+          {/* Login Link — Single Bottom Link */}
+          <div className="mt-6 pt-6 border-t border-[#B9C7CF]/60 text-center text-xs text-[#7D7D7D]">
+            Already registered?{' '}
+            <Link href="/login" className="font-bold text-[#42606F] hover:underline">
+              Sign In to Customer Portal
             </Link>
           </div>
-
         </div>
       </div>
     </div>

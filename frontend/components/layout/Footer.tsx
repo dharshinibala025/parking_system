@@ -29,7 +29,7 @@ export function Footer() {
               ParkEase is an online parking reservation platform offering seamless parking slot discovery, real-time availability, instant slot booking, and secure simulated payments.
             </p>
             <div className="flex items-center gap-3 text-xs text-slate-400">
-              <span className="flex items-center gap-1"><ShieldCheck className="w-4 h-4 text-emerald-400" /> Secure Firebase Auth</span>
+              <span className="flex items-center gap-1"><ShieldCheck className="w-4 h-4 text-emerald-400" /> Secure JWT Auth</span>
               <span className="flex items-center gap-1"><Clock className="w-4 h-4 text-blue-400" /> 24/7 Availability</span>
             </div>
           </div>
