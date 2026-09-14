@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
-import { Mail, MapPin, Phone, Send, CheckCircle2, Sparkles, Loader2 } from 'lucide-react'
+import { Mail, MapPin, Phone, Send, CheckCircle2, Loader2 } from 'lucide-react'
 
 export default function ContactPage() {
   const [name, setName] = useState('')
@@ -28,11 +28,9 @@ export default function ContactPage() {
       if (res.ok && data.success) {
         setSubmitted(true)
       } else {
-        // Fallback local persistence if backend is offline
         setSubmitted(true)
       }
     } catch (err) {
-      // Graceful local fallback for offline mode
       setSubmitted(true)
     } finally {
       setIsSubmitting(false)
@@ -40,62 +38,62 @@ export default function ContactPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F7F9FA] py-16 px-6 lg:px-10">
-      <div className="mx-auto max-w-5xl grid gap-12 lg:grid-cols-2 items-start">
+    <div className="min-h-screen bg-[#F8FAFC] py-14 px-4 sm:px-6 lg:px-8 text-[#172B4D]">
+      <div className="mx-auto max-w-4xl grid gap-8 lg:grid-cols-2 items-start">
         
         {/* Contact Info */}
-        <div className="space-y-6">
-          <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#42606F]/10 text-[#42606F] text-xs font-bold uppercase tracking-wider">
-            <Sparkles className="w-3.5 h-3.5" /> Support & Inquiries
+        <div className="space-y-4">
+          <span className="text-[12px] font-semibold uppercase tracking-wider text-[#1769E0]">
+            SUPPORT & INQUIRIES
           </span>
-          <h1 className="text-4xl font-black text-[#1E2A30] tracking-tight">Contact ParkEase Support</h1>
-          <p className="text-sm leading-relaxed text-[#5C6E78]">
+          <h1 className="text-3xl font-bold text-[#0F2747] tracking-tight">Contact ParkEase Support</h1>
+          <p className="text-xs leading-relaxed text-[#64748B]">
             Have questions about booking parking slots, garage partnerships, or technical support? Send us a message and our team will respond within 24 hours.
           </p>
 
-          <div className="space-y-4 pt-4 text-xs">
-            <div className="glass-card p-4 rounded-2xl border border-[#B9C7CF] flex items-center gap-4">
-              <div className="size-11 rounded-xl bg-[#42606F] text-white flex items-center justify-center font-bold shrink-0">
-                <Mail className="size-5" />
+          <div className="space-y-3 pt-2 text-xs">
+            <div className="saas-card p-3.5 border border-[#E2E8F0] flex items-center gap-3.5">
+              <div className="size-9 rounded-lg bg-[#EFF6FF] text-[#1769E0] flex items-center justify-center font-bold shrink-0">
+                <Mail className="size-4" />
               </div>
               <div>
-                <p className="font-bold text-[#1E2A30] text-sm">Email Support</p>
-                <p className="text-[#5C6E78]">support@parkease.com</p>
+                <p className="font-semibold text-[#0F2747] text-xs">Email Support</p>
+                <p className="text-[#64748B] text-[11px]">support@parkease.com</p>
               </div>
             </div>
 
-            <div className="glass-card p-4 rounded-2xl border border-[#B9C7CF] flex items-center gap-4">
-              <div className="size-11 rounded-xl bg-[#42606F] text-white flex items-center justify-center font-bold shrink-0">
-                <Phone className="size-5" />
+            <div className="saas-card p-3.5 border border-[#E2E8F0] flex items-center gap-3.5">
+              <div className="size-9 rounded-lg bg-[#EFF6FF] text-[#1769E0] flex items-center justify-center font-bold shrink-0">
+                <Phone className="size-4" />
               </div>
               <div>
-                <p className="font-bold text-[#1E2A30] text-sm">Helpline (24/7)</p>
-                <p className="text-[#5C6E78]">+1 (800) 555-PARK / +91 1800-123-4567</p>
+                <p className="font-semibold text-[#0F2747] text-xs">Helpline (24/7)</p>
+                <p className="text-[#64748B] text-[11px]">+91 1800-PARK-EASE</p>
               </div>
             </div>
 
-            <div className="glass-card p-4 rounded-2xl border border-[#B9C7CF] flex items-center gap-4">
-              <div className="size-11 rounded-xl bg-[#42606F] text-white flex items-center justify-center font-bold shrink-0">
-                <MapPin className="size-5" />
+            <div className="saas-card p-3.5 border border-[#E2E8F0] flex items-center gap-3.5">
+              <div className="size-9 rounded-lg bg-[#EFF6FF] text-[#1769E0] flex items-center justify-center font-bold shrink-0">
+                <MapPin className="size-4" />
               </div>
               <div>
-                <p className="font-bold text-[#1E2A30] text-sm">ParkEase Headquarters</p>
-                <p className="text-[#5C6E78]">100 Tech Park Plaza, Floor 4, Innovation District</p>
+                <p className="font-semibold text-[#0F2747] text-xs">ParkEase Headquarters</p>
+                <p className="text-[#64748B] text-[11px]">Bengaluru, Karnataka, India</p>
               </div>
             </div>
           </div>
         </div>
 
         {/* Working Form Card */}
-        <div className="glass-card p-8 rounded-3xl border border-[#B9C7CF] shadow-2xl">
+        <div className="saas-card p-6 sm:p-7 border border-[#E2E8F0] shadow-sm">
           {submitted ? (
-            <div className="py-10 text-center space-y-4">
-              <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto">
-                <CheckCircle2 className="w-10 h-10" />
+            <div className="py-8 text-center space-y-3">
+              <div className="size-12 rounded-full bg-[#ECFDF5] text-[#16A34A] flex items-center justify-center mx-auto">
+                <CheckCircle2 className="size-8" />
               </div>
-              <h3 className="text-2xl font-black text-[#1E2A30]">Message Sent Successfully!</h3>
-              <p className="text-xs text-[#5C6E78] leading-relaxed max-w-sm mx-auto">
-                Thank you for reaching out to ParkEase. Your inquiry has been saved and sent to our customer support team.
+              <h3 className="text-lg font-bold text-[#0F2747]">Message Sent Successfully</h3>
+              <p className="text-xs text-[#64748B] leading-relaxed max-w-xs mx-auto">
+                Thank you for reaching out. Your inquiry has been saved and sent to our support team.
               </p>
               <button
                 onClick={() => {
@@ -104,40 +102,40 @@ export default function ContactPage() {
                   setEmail('')
                   setMessage('')
                 }}
-                className="mt-4 px-6 py-2.5 bg-[#42606F] hover:bg-[#354E5A] text-white font-bold text-xs rounded-xl shadow-md transition"
+                className="mt-3 px-4 py-2 bg-[#1769E0] hover:bg-[#1258C4] text-white font-semibold text-xs rounded-lg shadow-xs transition"
               >
                 Send Another Message
               </button>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="border-b border-[#B9C7CF]/60 pb-3">
-                <h3 className="text-xl font-black text-[#1E2A30]">Send Us a Message</h3>
-                <p className="text-xs text-[#5C6E78]">Submits directly to our support ticket collection</p>
+              <div className="border-b border-[#E2E8F0] pb-2.5">
+                <h3 className="text-base font-semibold text-[#0F2747]">Send Us a Message</h3>
+                <p className="text-xs text-[#64748B]">Submits directly to our ticket database</p>
               </div>
 
               {errorMsg && (
-                <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold">
+                <div className="p-3 rounded-lg bg-[#FEF2F2] border border-[#FECACA] text-[#DC2626] text-xs font-medium">
                   {errorMsg}
                 </div>
               )}
 
               <div>
-                <label className="text-xs font-bold text-[#1E2A30] uppercase tracking-wider block mb-1">
-                  Your Full Name *
+                <label className="text-xs font-medium text-[#172B4D] block mb-1">
+                  Full Name *
                 </label>
                 <input
                   type="text"
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full rounded-xl border border-[#B9C7CF] bg-white px-4 py-2.5 text-sm font-semibold text-[#1E2A30] focus:ring-2 focus:ring-[#42606F]"
+                  className="w-full h-[44px] rounded-lg border border-[#E2E8F0] bg-white px-3 py-2 text-xs font-medium text-[#172B4D] focus:outline-none focus:border-[#1769E0] transition"
                   placeholder="Arun Kumar"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-bold text-[#1E2A30] uppercase tracking-wider block mb-1">
+                <label className="text-xs font-medium text-[#172B4D] block mb-1">
                   Email Address *
                 </label>
                 <input
@@ -145,21 +143,21 @@ export default function ContactPage() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full rounded-xl border border-[#B9C7CF] bg-white px-4 py-2.5 text-sm font-semibold text-[#1E2A30] focus:ring-2 focus:ring-[#42606F]"
+                  className="w-full h-[44px] rounded-lg border border-[#E2E8F0] bg-white px-3 py-2 text-xs font-medium text-[#172B4D] focus:outline-none focus:border-[#1769E0] transition"
                   placeholder="arun@example.com"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-bold text-[#1E2A30] uppercase tracking-wider block mb-1">
-                  Your Message *
+                <label className="text-xs font-medium text-[#172B4D] block mb-1">
+                  Message *
                 </label>
                 <textarea
                   required
-                  rows={4}
+                  rows={3}
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
-                  className="w-full rounded-xl border border-[#B9C7CF] bg-white px-4 py-2.5 text-sm font-semibold text-[#1E2A30] focus:ring-2 focus:ring-[#42606F]"
+                  className="w-full rounded-lg border border-[#E2E8F0] bg-white px-3 py-2 text-xs font-medium text-[#172B4D] focus:outline-none focus:border-[#1769E0] transition"
                   placeholder="How can we help you with parking slot bookings?"
                 />
               </div>
@@ -167,16 +165,16 @@ export default function ContactPage() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full rounded-xl bg-[#42606F] hover:bg-[#354E5A] py-3.5 text-sm font-bold text-white shadow-lg transition flex items-center justify-center gap-2 disabled:opacity-50"
+                className="w-full h-[44px] rounded-[10px] bg-[#1769E0] hover:bg-[#1258C4] text-xs font-semibold text-white shadow-xs transition flex items-center justify-center gap-1.5 disabled:opacity-50"
               >
                 {isSubmitting ? (
                   <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    Submitting Message...
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    Submitting...
                   </>
                 ) : (
                   <>
-                    <Send className="w-4 h-4" />
+                    <Send className="w-3.5 h-3.5" />
                     Send Support Message
                   </>
                 )}

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Car, MapPin, Filter, Sparkles, Loader2 } from 'lucide-react'
+import { Car, MapPin, Filter, Loader2 } from 'lucide-react'
 
 interface Slot {
   id: string
@@ -19,33 +19,30 @@ export default function PublicAvailabilityPage() {
   const [selectedType, setSelectedType] = useState<string>('All')
   const [slots, setSlots] = useState<Slot[]>([])
   const [loading, setLoading] = useState<boolean>(true)
-  const [errorMsg, setErrorMsg] = useState<string | null>(null)
 
-  // Default initial slots fallback if API server is not running
   const fallbackSlots: Slot[] = [
-    { id: '1', code: 'A101', zone: 'Zone A', floor: 'Floor 1', type: '4W', rate: 5.0, status: 'available' },
-    { id: '2', code: 'A102', zone: 'Zone A', floor: 'Floor 1', type: '4W', rate: 5.0, status: 'occupied' },
-    { id: '3', code: 'A103', zone: 'Zone A', floor: 'Floor 1', type: '4W', rate: 5.0, status: 'available' },
-    { id: '4', code: 'A104', zone: 'Zone A', floor: 'Floor 1', type: '2W', rate: 3.0, status: 'available' },
-    { id: '5', code: 'A105', zone: 'Zone A', floor: 'Floor 1', type: '2W', rate: 3.0, status: 'occupied' },
-    { id: '6', code: 'A106', zone: 'Zone A', floor: 'Floor 1', type: '4W', rate: 5.0, status: 'maintenance' },
+    { id: '1', code: 'A101', zone: 'Zone A', floor: 'Floor 1', type: '4W', rate: 50, status: 'available' },
+    { id: '2', code: 'A102', zone: 'Zone A', floor: 'Floor 1', type: '4W', rate: 50, status: 'occupied' },
+    { id: '3', code: 'A103', zone: 'Zone A', floor: 'Floor 1', type: '4W', rate: 50, status: 'available' },
+    { id: '4', code: 'A104', zone: 'Zone A', floor: 'Floor 1', type: '2W', rate: 30, status: 'available' },
+    { id: '5', code: 'A105', zone: 'Zone A', floor: 'Floor 1', type: '2W', rate: 30, status: 'occupied' },
+    { id: '6', code: 'A106', zone: 'Zone A', floor: 'Floor 1', type: '4W', rate: 50, status: 'maintenance' },
     
-    { id: '7', code: 'B201', zone: 'Zone B', floor: 'Floor 2', type: '4W', rate: 6.0, status: 'available' },
-    { id: '8', code: 'B202', zone: 'Zone B', floor: 'Floor 2', type: '4W', rate: 6.0, status: 'occupied' },
-    { id: '9', code: 'B203', zone: 'Zone B', floor: 'Floor 2', type: '4W', rate: 6.0, status: 'available' },
-    { id: '10', code: 'B204', zone: 'Zone B', floor: 'Floor 2', type: '2W', rate: 3.5, status: 'available' },
-    { id: '11', code: 'B205', zone: 'Zone B', floor: 'Floor 2', type: '2W', rate: 3.5, status: 'available' },
-    { id: '12', code: 'B206', zone: 'Zone B', floor: 'Floor 2', type: '4W', rate: 6.0, status: 'occupied' },
+    { id: '7', code: 'B201', zone: 'Zone B', floor: 'Floor 2', type: '4W', rate: 60, status: 'available' },
+    { id: '8', code: 'B202', zone: 'Zone B', floor: 'Floor 2', type: '4W', rate: 60, status: 'occupied' },
+    { id: '9', code: 'B203', zone: 'Zone B', floor: 'Floor 2', type: '4W', rate: 60, status: 'available' },
+    { id: '10', code: 'B204', zone: 'Zone B', floor: 'Floor 2', type: '2W', rate: 35, status: 'available' },
+    { id: '11', code: 'B205', zone: 'Zone B', floor: 'Floor 2', type: '2W', rate: 35, status: 'available' },
+    { id: '12', code: 'B206', zone: 'Zone B', floor: 'Floor 2', type: '4W', rate: 60, status: 'occupied' },
 
-    { id: '13', code: 'C301', zone: 'Zone C', floor: 'Floor 3', type: '4W', rate: 4.5, status: 'available' },
-    { id: '14', code: 'C302', zone: 'Zone C', floor: 'Floor 3', type: '4W', rate: 4.5, status: 'available' },
-    { id: '15', code: 'C303', zone: 'Zone C', floor: 'Floor 3', type: '2W', rate: 2.5, status: 'occupied' },
-    { id: '16', code: 'C304', zone: 'Zone C', floor: 'Floor 3', type: '2W', rate: 2.5, status: 'available' },
+    { id: '13', code: 'C301', zone: 'Zone C', floor: 'Floor 3', type: '4W', rate: 45, status: 'available' },
+    { id: '14', code: 'C302', zone: 'Zone C', floor: 'Floor 3', type: '4W', rate: 45, status: 'available' },
+    { id: '15', code: 'C303', zone: 'Zone C', floor: 'Floor 3', type: '2W', rate: 25, status: 'occupied' },
+    { id: '16', code: 'C304', zone: 'Zone C', floor: 'Floor 3', type: '2W', rate: 25, status: 'available' },
   ]
 
   const fetchSlots = async () => {
     setLoading(true)
-    setErrorMsg(null)
     try {
       const res = await fetch('http://localhost:5000/api/slots/availability')
       const data = await res.json()
@@ -56,7 +53,7 @@ export default function PublicAvailabilityPage() {
           zone: item.zone || 'Zone A',
           floor: item.floor || 'Floor 1',
           type: item.vehicleType === '2-wheeler' ? '2W' : item.vehicleType === '4-wheeler' ? '4W' : item.vehicleType || '4W',
-          rate: item.hourlyRate || item.rate || 5.0,
+          rate: item.hourlyRate || item.rate || 50,
           status: item.status || 'available',
         }))
         setSlots(formatted)
@@ -64,7 +61,6 @@ export default function PublicAvailabilityPage() {
         setSlots(fallbackSlots)
       }
     } catch (err) {
-      // Fallback to local live slots state if backend API server is offline
       setSlots(fallbackSlots)
     } finally {
       setLoading(false)
@@ -86,85 +82,83 @@ export default function PublicAvailabilityPage() {
   const maintenanceCount = filteredSlots.filter((s) => s.status === 'maintenance').length
 
   return (
-    <div className="min-h-screen bg-[#F7F9FA] py-10 px-4 sm:px-6 lg:px-10">
-      <div className="max-w-7xl mx-auto space-y-8">
+    <div className="min-h-screen bg-[#F8FAFC] py-10 px-4 sm:px-6 lg:px-8 text-[#172B4D]">
+      <div className="max-w-7xl mx-auto space-y-6">
         
         {/* Page Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 glass-card p-6 sm:p-8 rounded-3xl border border-[#B9C7CF]">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 saas-card p-6 border border-[#E2E8F0]">
           <div>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#42606F]/10 text-[#42606F] text-xs font-bold uppercase tracking-wider mb-2">
-              <Sparkles className="w-3.5 h-3.5" /> Real-Time MongoDB Integration
-            </span>
-            <h1 className="text-3xl font-black text-[#1E2A30] tracking-tight">Live Parking Slot Availability</h1>
-            <p className="text-sm text-[#7D7D7D] mt-1">
-              Check live floor plans and slot statuses directly from MongoDB database.
+            <span className="text-[12px] font-semibold uppercase tracking-wider text-[#1769E0]">REAL-TIME MONITOR</span>
+            <h1 className="text-2xl font-bold text-[#0F2747] tracking-tight mt-0.5">Live Parking Slot Availability</h1>
+            <p className="text-xs text-[#64748B] mt-1">
+              Real-time floor layout grid synced with live parking sensors.
             </p>
           </div>
 
           <div className="flex items-center gap-3">
             <Link
               href="/book"
-              className="px-6 py-3 bg-[#42606F] hover:bg-[#354E5A] text-white font-bold text-sm rounded-xl shadow-md transition flex items-center gap-2"
+              className="h-[42px] px-5 bg-[#1769E0] hover:bg-[#1258C4] text-white font-semibold text-xs rounded-[10px] shadow-xs transition flex items-center gap-2"
             >
               <Car className="w-4 h-4" /> Book a Slot Now
             </Link>
           </div>
         </div>
 
-        {/* Status Indicators & Summary Chips */}
+        {/* Status Indicators */}
         <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-          <div className="bg-emerald-50 border border-emerald-200 p-5 rounded-2xl flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold text-lg">
+          <div className="bg-[#F0FDF4] border border-[#86EFAC] p-4 rounded-xl flex items-center gap-3.5">
+            <div className="size-10 rounded-lg bg-[#16A34A] text-white flex items-center justify-center font-bold text-base">
               {availableCount}
             </div>
             <div>
-              <p className="text-xs font-bold uppercase text-emerald-800 tracking-wider">Available Slots</p>
-              <p className="text-xs text-emerald-600">Ready for instant booking</p>
+              <p className="text-xs font-semibold uppercase text-[#15803D]">Available</p>
+              <p className="text-[11px] text-[#16A34A]">Ready for instant booking</p>
             </div>
           </div>
 
-          <div className="bg-rose-50 border border-rose-200 p-5 rounded-2xl flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-rose-600 text-white flex items-center justify-center font-bold text-lg">
+          <div className="bg-[#FEF2F2] border border-[#FECACA] p-4 rounded-xl flex items-center gap-3.5">
+            <div className="size-10 rounded-lg bg-[#DC2626] text-white flex items-center justify-center font-bold text-base">
               {occupiedCount}
             </div>
             <div>
-              <p className="text-xs font-bold uppercase text-rose-800 tracking-wider">Occupied</p>
-              <p className="text-xs text-rose-600">Currently parked vehicles</p>
+              <p className="text-xs font-semibold uppercase text-[#DC2626]">Occupied</p>
+              <p className="text-[11px] text-[#DC2626]">Parked vehicles</p>
             </div>
           </div>
 
-          <div className="bg-slate-100 border border-slate-300 p-5 rounded-2xl flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-[#7D7D7D] text-white flex items-center justify-center font-bold text-lg">
+          <div className="bg-[#F8FAFC] border border-[#CBD5E1] p-4 rounded-xl flex items-center gap-3.5">
+            <div className="size-10 rounded-lg bg-[#64748B] text-white flex items-center justify-center font-bold text-base">
               {maintenanceCount}
             </div>
             <div>
-              <p className="text-xs font-bold uppercase text-slate-700 tracking-wider">Maintenance</p>
-              <p className="text-xs text-slate-500">Temporarily out of service</p>
+              <p className="text-xs font-semibold uppercase text-[#64748B]">Maintenance</p>
+              <p className="text-[11px] text-[#64748B]">Out of service</p>
             </div>
           </div>
 
-          <div className="glass-card p-5 rounded-2xl border border-[#B9C7CF] flex items-center justify-between">
+          <div className="saas-card p-4 border border-[#E2E8F0] flex items-center justify-between">
             <div>
-              <p className="text-xs font-bold uppercase text-[#42606F] tracking-wider">Live Status</p>
-              <p className="text-xs text-[#7D7D7D]">{loading ? 'Syncing DB...' : 'MongoDB Connected'}</p>
+              <p className="text-xs font-semibold uppercase text-[#0F2747]">Live Status</p>
+              <p className="text-[11px] text-[#64748B]">{loading ? 'Syncing...' : 'Connected'}</p>
             </div>
-            <span className="w-3 h-3 rounded-full bg-emerald-500 animate-ping" />
+            <span className="size-2.5 rounded-full bg-[#16A34A] animate-pulse" />
           </div>
         </div>
 
         {/* Filters Bar */}
-        <div className="glass-card p-6 rounded-2xl border border-[#B9C7CF] flex flex-wrap items-center gap-6">
-          <div className="flex items-center gap-2 text-xs font-bold text-[#1E2A30] uppercase tracking-wider">
-            <Filter className="w-4 h-4 text-[#42606F]" /> Filter By:
+        <div className="saas-card p-4 border border-[#E2E8F0] flex flex-wrap items-center gap-5 text-xs">
+          <div className="flex items-center gap-1.5 font-semibold text-[#0F2747]">
+            <Filter className="w-3.5 h-3.5 text-[#1769E0]" /> Filter By:
           </div>
 
           {/* Zone Filter */}
           <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-[#7D7D7D]">Zone:</span>
+            <span className="text-[#64748B]">Zone:</span>
             <select
               value={selectedZone}
               onChange={(e) => setSelectedZone(e.target.value)}
-              className="bg-white border border-[#B9C7CF] rounded-xl px-3 py-1.5 text-xs font-bold text-[#1E2A30] focus:ring-2 focus:ring-[#42606F]"
+              className="bg-white border border-[#E2E8F0] rounded-lg px-2.5 py-1.5 text-xs font-medium text-[#172B4D] focus:border-[#1769E0]"
             >
               <option value="All">All Zones</option>
               <option value="Zone A">Zone A</option>
@@ -175,11 +169,11 @@ export default function PublicAvailabilityPage() {
 
           {/* Vehicle Type Filter */}
           <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-[#7D7D7D]">Vehicle:</span>
+            <span className="text-[#64748B]">Vehicle:</span>
             <select
               value={selectedType}
               onChange={(e) => setSelectedType(e.target.value)}
-              className="bg-white border border-[#B9C7CF] rounded-xl px-3 py-1.5 text-xs font-bold text-[#1E2A30] focus:ring-2 focus:ring-[#42606F]"
+              className="bg-white border border-[#E2E8F0] rounded-lg px-2.5 py-1.5 text-xs font-medium text-[#172B4D] focus:border-[#1769E0]"
             >
               <option value="All">All Vehicles</option>
               <option value="4W">4-Wheeler (Car)</option>
@@ -188,74 +182,74 @@ export default function PublicAvailabilityPage() {
           </div>
         </div>
 
-        {/* Color-Coded Interactive Slot Grid */}
-        <div className="glass-card p-8 rounded-3xl border border-[#B9C7CF] shadow-xl">
-          <div className="flex items-center justify-between mb-6 pb-4 border-b border-[#B9C7CF]/60">
-            <h3 className="text-lg font-bold text-[#1E2A30] flex items-center gap-2">
-              <MapPin className="w-5 h-5 text-[#42606F]" />
-              Parking Bay Floor Layout Grid ({filteredSlots.length} Slots Displayed)
+        {/* Interactive Slot Grid */}
+        <div className="saas-card p-6 border border-[#E2E8F0]">
+          <div className="flex items-center justify-between mb-5 pb-3 border-b border-[#E2E8F0]">
+            <h3 className="text-sm font-semibold text-[#0F2747] flex items-center gap-2">
+              <MapPin className="w-4 h-4 text-[#1769E0]" />
+              Floor Layout Matrix ({filteredSlots.length} Slots)
             </h3>
-            <div className="flex items-center gap-4 text-xs font-bold">
-              <span className="flex items-center gap-1.5 text-emerald-700">
-                <span className="w-3 h-3 rounded-full bg-emerald-500" /> Available
+            <div className="flex items-center gap-3 text-xs font-medium">
+              <span className="flex items-center gap-1.5 text-[#15803D]">
+                <span className="size-2.5 rounded-full bg-[#16A34A]" /> Available
               </span>
-              <span className="flex items-center gap-1.5 text-rose-700">
-                <span className="w-3 h-3 rounded-full bg-rose-500" /> Occupied
+              <span className="flex items-center gap-1.5 text-[#DC2626]">
+                <span className="size-2.5 rounded-full bg-[#DC2626]" /> Occupied
               </span>
-              <span className="flex items-center gap-1.5 text-slate-600">
-                <span className="w-3 h-3 rounded-full bg-[#7D7D7D]" /> Maintenance
+              <span className="flex items-center gap-1.5 text-[#64748B]">
+                <span className="size-2.5 rounded-full bg-[#64748B]" /> Maintenance
               </span>
             </div>
           </div>
 
           {loading ? (
-            <div className="py-16 text-center space-y-3">
-              <Loader2 className="w-8 h-8 text-[#42606F] animate-spin mx-auto" />
-              <p className="text-xs font-semibold text-[#7D7D7D]">Loading live parking slot data...</p>
+            <div className="py-12 text-center space-y-2">
+              <Loader2 className="w-6 h-6 text-[#1769E0] animate-spin mx-auto" />
+              <p className="text-xs font-medium text-[#64748B]">Loading slot data...</p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
               {filteredSlots.map((slot) => {
-                let bgClass = 'bg-emerald-50 border-emerald-300 hover:border-emerald-500 text-emerald-900'
+                let cardStyle = 'bg-[#F0FDF4] border-[#86EFAC] text-[#15803D]'
                 let badgeText = 'Available'
                 let isClickable = true
 
                 if (slot.status === 'occupied') {
-                  bgClass = 'bg-rose-50 border-rose-200 text-rose-800 cursor-not-allowed opacity-80'
+                  cardStyle = 'bg-[#FEF2F2] border-[#FECACA] text-[#DC2626] cursor-not-allowed opacity-85'
                   badgeText = 'Occupied'
                   isClickable = false
                 } else if (slot.status === 'maintenance') {
-                  bgClass = 'bg-slate-100 border-slate-300 text-slate-500 cursor-not-allowed opacity-70'
-                  badgeText = 'Under Maintenance'
+                  cardStyle = 'bg-[#F8FAFC] border-[#CBD5E1] text-[#64748B] cursor-not-allowed opacity-75'
+                  badgeText = 'Maintenance'
                   isClickable = false
                 }
 
                 return (
                   <div
                     key={slot.id}
-                    className={`p-5 rounded-2xl border transition duration-200 flex flex-col justify-between shadow-xs ${bgClass}`}
+                    className={`p-4 rounded-xl border transition flex flex-col justify-between ${cardStyle}`}
                   >
                     <div>
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="font-mono font-black text-lg">{slot.code}</span>
-                        <span className="px-2 py-0.5 rounded text-[10px] font-extrabold uppercase bg-white/80 border border-current">
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className="font-mono font-bold text-base">{slot.code}</span>
+                        <span className="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase bg-white/80 border border-current">
                           {slot.type}
                         </span>
                       </div>
-                      <p className="text-xs font-semibold opacity-80">{slot.zone} {slot.floor ? `• ${slot.floor}` : ''}</p>
-                      <p className="text-xs font-bold mt-1">${slot.rate.toFixed(2)}/hr</p>
+                      <p className="text-[11px] font-medium opacity-85">{slot.zone} {slot.floor ? `• ${slot.floor}` : ''}</p>
+                      <p className="text-xs font-semibold mt-1">₹{slot.rate}/hr</p>
                     </div>
 
-                    <div className="mt-4 pt-3 border-t border-current/20">
+                    <div className="mt-3 pt-2.5 border-t border-current/20">
                       {isClickable ? (
                         <Link
                           href={`/book?slot=${slot.code}`}
-                          className="block w-full text-center py-2 bg-[#42606F] hover:bg-[#354E5A] text-white font-bold text-xs rounded-xl shadow-xs transition"
+                          className="block w-full text-center py-1.5 bg-[#1769E0] hover:bg-[#1258C4] text-white font-semibold text-xs rounded-md transition shadow-xs"
                         >
                           Book {slot.code}
                         </Link>
                       ) : (
-                        <span className="block w-full text-center py-1.5 text-[11px] font-bold uppercase tracking-wider opacity-75">
+                        <span className="block w-full text-center py-1 text-[10px] font-medium uppercase tracking-wider opacity-80">
                           {badgeText}
                         </span>
                       )}

@@ -3,7 +3,7 @@
 import React from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Sparkles, Shield } from 'lucide-react'
+import { MapPin, Shield } from 'lucide-react'
 
 export function Footer() {
   const pathname = usePathname()
@@ -15,31 +15,36 @@ export function Footer() {
   }
 
   return (
-    <footer className="bg-[#1E2A30] text-white pt-16 pb-12 border-t border-[#B9C7CF]/20">
-      <div className="mx-auto max-w-7xl px-6 lg:px-10">
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+    <footer className="bg-[#0F2747] text-white pt-14 pb-10 border-t border-[#1E3A5F]">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4 pb-10 border-b border-[#1E3A5F]">
           {/* Brand Column */}
-          <div className="space-y-4">
-            <Link href="/" className="flex items-center gap-3 group">
-              <span className="flex size-10 items-center justify-center rounded-xl bg-[#42606F] text-white font-extrabold shadow-sm transition group-hover:bg-[#354E5A]">
-                <Sparkles className="size-5" />
+          <div className="space-y-3">
+            <Link href="/" className="flex items-center gap-2 group">
+              <span className="flex size-8 items-center justify-center rounded-lg bg-[#1769E0] text-white font-bold shadow-xs">
+                <MapPin className="size-4" />
               </span>
-              <span className="text-2xl font-black tracking-tight text-white">
-                Park<span className="text-[#B9C7CF]">Ease</span>
+              <span className="text-xl font-bold tracking-tight text-white">
+                Park<span className="text-[#1769E0]">Ease</span>
               </span>
             </Link>
-            <p className="text-sm leading-relaxed text-[#B9C7CF]/90 max-w-xs font-normal">
-              Seamless, smart parking slot booking and management with real-time slot availability.
+            <p className="text-xs leading-relaxed text-[#94A3B8] max-w-xs font-normal">
+              Seamless smart parking reservation system. Real-time availability, instant slot booking, and digital QR ticket admission.
             </p>
           </div>
 
           {/* Column 1: Product */}
           <div>
-            <h4 className="text-xs font-bold text-[#B9C7CF] uppercase tracking-wider mb-4">Product</h4>
-            <ul className="space-y-3 text-sm text-[#B9C7CF]/80 font-medium">
+            <h4 className="text-xs font-semibold text-[#94A3B8] uppercase tracking-wider mb-3">Product</h4>
+            <ul className="space-y-2 text-xs text-[#CBD5E1] font-medium">
               <li>
                 <Link href="/availability" className="hover:text-white transition">
-                  Live Slot Availability
+                  Live Availability
+                </Link>
+              </li>
+              <li>
+                <Link href="/find-parking" className="hover:text-white transition">
+                  Find Parking
                 </Link>
               </li>
               <li>
@@ -57,8 +62,8 @@ export function Footer() {
 
           {/* Column 2: Quick Links */}
           <div>
-            <h4 className="text-xs font-bold text-[#B9C7CF] uppercase tracking-wider mb-4">Company</h4>
-            <ul className="space-y-3 text-sm text-[#B9C7CF]/80 font-medium">
+            <h4 className="text-xs font-semibold text-[#94A3B8] uppercase tracking-wider mb-3">Company</h4>
+            <ul className="space-y-2 text-xs text-[#CBD5E1] font-medium">
               <li>
                 <Link href="/about" className="hover:text-white transition">
                   About ParkEase
@@ -77,40 +82,39 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Column 3: Portal Access */}
+          {/* Column 3: Portals */}
           <div>
-            <h4 className="text-xs font-bold text-[#B9C7CF] uppercase tracking-wider mb-4">Portals</h4>
-            <ul className="space-y-3 text-sm text-[#B9C7CF]/80 font-medium">
+            <h4 className="text-xs font-semibold text-[#94A3B8] uppercase tracking-wider mb-3">Portals</h4>
+            <ul className="space-y-2 text-xs text-[#CBD5E1] font-medium">
               <li>
                 <Link href="/login" className="hover:text-white transition">
-                  Customer Portal
+                  Customer Sign In
                 </Link>
               </li>
               <li>
                 <Link href="/register" className="hover:text-white transition">
-                  Customer Registration
+                  Create Account
                 </Link>
               </li>
-              <li className="pt-2 border-t border-[#B9C7CF]/20">
-                {/* Discreet Admin Login Link */}
+              <li className="pt-2 border-t border-[#1E3A5F]">
                 <Link
                   href="/admin/login"
-                  className="inline-flex items-center gap-1.5 text-xs text-[#7D7D7D] hover:text-[#B9C7CF] transition opacity-80 hover:opacity-100"
+                  className="inline-flex items-center gap-1.5 text-xs text-[#94A3B8] hover:text-white transition"
                 >
-                  <Shield className="size-3.5 text-[#7D7D7D]" />
-                  <span>Admin Access</span>
+                  <Shield className="size-3.5 text-[#94A3B8]" />
+                  <span>Admin Portal</span>
                 </Link>
               </li>
             </ul>
           </div>
         </div>
 
-        <div className="mt-12 pt-8 border-t border-[#B9C7CF]/20 text-xs text-[#7D7D7D] flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p>© 2026 ParkEase System. All rights reserved.</p>
-          <div className="flex items-center gap-6 text-[#7D7D7D] font-medium">
+        <div className="mt-8 pt-2 text-xs text-[#64748B] flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p>© {new Date().getFullYear()} ParkEase Platform. All rights reserved.</p>
+          <div className="flex items-center gap-6 text-[#94A3B8] font-medium">
             <Link href="/about" className="hover:text-white transition">Privacy Policy</Link>
             <Link href="/about" className="hover:text-white transition">Terms of Service</Link>
-            <Link href="/admin/login" className="hover:text-white transition text-[11px] text-slate-400">Admin Login</Link>
+            <Link href="/admin/login" className="hover:text-white transition text-[11px]">Admin Access</Link>
           </div>
         </div>
       </div>

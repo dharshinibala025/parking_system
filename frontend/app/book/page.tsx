@@ -57,20 +57,20 @@ function BookSlotContent() {
 
   // Master Slots Registry
   const [slots] = useState<Slot[]>([
-    { id: 's1', slotNumber: 'A101', zone: 'Zone A', floor: 'Floor 1', vehicleType: '4W', hourlyRate: 5.0, status: 'available' },
-    { id: 's2', slotNumber: 'A102', zone: 'Zone A', floor: 'Floor 1', vehicleType: '4W', hourlyRate: 5.0, status: 'occupied' },
-    { id: 's3', slotNumber: 'A103', zone: 'Zone A', floor: 'Floor 1', vehicleType: '4W', hourlyRate: 5.0, status: 'available' },
-    { id: 's4', slotNumber: 'A104', zone: 'Zone A', floor: 'Floor 1', vehicleType: '2W', hourlyRate: 3.0, status: 'available' },
-    { id: 's5', slotNumber: 'A105', zone: 'Zone A', floor: 'Floor 1', vehicleType: '2W', hourlyRate: 3.0, status: 'occupied' },
-    { id: 's6', slotNumber: 'A106', zone: 'Zone A', floor: 'Floor 1', vehicleType: '4W', hourlyRate: 5.0, status: 'maintenance' },
+    { id: 's1', slotNumber: 'A101', zone: 'Zone A', floor: 'Floor 1', vehicleType: '4W', hourlyRate: 50.0, status: 'available' },
+    { id: 's2', slotNumber: 'A102', zone: 'Zone A', floor: 'Floor 1', vehicleType: '4W', hourlyRate: 50.0, status: 'occupied' },
+    { id: 's3', slotNumber: 'A103', zone: 'Zone A', floor: 'Floor 1', vehicleType: '4W', hourlyRate: 50.0, status: 'available' },
+    { id: 's4', slotNumber: 'A104', zone: 'Zone A', floor: 'Floor 1', vehicleType: '2W', hourlyRate: 30.0, status: 'available' },
+    { id: 's5', slotNumber: 'A105', zone: 'Zone A', floor: 'Floor 1', vehicleType: '2W', hourlyRate: 30.0, status: 'occupied' },
+    { id: 's6', slotNumber: 'A106', zone: 'Zone A', floor: 'Floor 1', vehicleType: '4W', hourlyRate: 50.0, status: 'maintenance' },
 
-    { id: 's7', slotNumber: 'B201', zone: 'Zone B', floor: 'Floor 2', vehicleType: '4W', hourlyRate: 6.0, status: 'available' },
-    { id: 's8', slotNumber: 'B202', zone: 'Zone B', floor: 'Floor 2', vehicleType: '4W', hourlyRate: 6.0, status: 'occupied' },
-    { id: 's9', slotNumber: 'B203', zone: 'Zone B', floor: 'Floor 2', vehicleType: '4W', hourlyRate: 6.0, status: 'available' },
-    { id: 's10', slotNumber: 'B204', zone: 'Zone B', floor: 'Floor 2', vehicleType: '2W', hourlyRate: 3.5, status: 'available' },
+    { id: 's7', slotNumber: 'B201', zone: 'Zone B', floor: 'Floor 2', vehicleType: '4W', hourlyRate: 60.0, status: 'available' },
+    { id: 's8', slotNumber: 'B202', zone: 'Zone B', floor: 'Floor 2', vehicleType: '4W', hourlyRate: 60.0, status: 'occupied' },
+    { id: 's9', slotNumber: 'B203', zone: 'Zone B', floor: 'Floor 2', vehicleType: '4W', hourlyRate: 60.0, status: 'available' },
+    { id: 's10', slotNumber: 'B204', zone: 'Zone B', floor: 'Floor 2', vehicleType: '2W', hourlyRate: 35.0, status: 'available' },
 
-    { id: 's11', slotNumber: 'C301', zone: 'Zone C', floor: 'Floor 3', vehicleType: '4W', hourlyRate: 4.5, status: 'available' },
-    { id: 's12', slotNumber: 'C302', zone: 'Zone C', floor: 'Floor 3', vehicleType: '2W', hourlyRate: 2.5, status: 'available' },
+    { id: 's11', slotNumber: 'C301', zone: 'Zone C', floor: 'Floor 3', vehicleType: '4W', hourlyRate: 45.0, status: 'available' },
+    { id: 's12', slotNumber: 'C302', zone: 'Zone C', floor: 'Floor 3', vehicleType: '2W', hourlyRate: 25.0, status: 'available' },
   ])
 
   const [selectedSlot, setSelectedSlot] = useState<Slot>(() => {
@@ -141,64 +141,50 @@ function BookSlotContent() {
 
   if (confirmedBooking) {
     return (
-      <div className="min-h-screen bg-[#FFFFFF] py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-xl mx-auto space-y-6">
-          <div className="glass-card p-8 rounded-3xl border border-[#D4DDE2] shadow-2xl text-center space-y-6">
-            <div className="w-16 h-16 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center mx-auto shadow-md">
-              <CheckCircle2 className="w-9 h-9" />
-            </div>
-
-            <div>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold uppercase tracking-wider mb-2">
-                Booking Confirmed & Paid
-              </span>
-              <h1 className="text-3xl font-black text-[#2C3E50]">Spot Reserved Successfully!</h1>
-              <p className="text-xs text-[#718096] mt-1">
-                Booking ID: <span className="font-mono font-bold text-[#5C7E8F]">{confirmedBooking.id}</span>
-              </p>
-            </div>
-
-            {/* QR Code Ticket */}
-            <div className="p-6 bg-white rounded-2xl border border-[#D4DDE2] shadow-inner flex flex-col items-center">
-              <QRTicket
-                bookingId={confirmedBooking.id}
-                slotNumber={confirmedBooking.slotNumber}
-                vehicleNumber={confirmedBooking.vehicleNumber}
-                date={confirmedBooking.date}
-                timeIn={confirmedBooking.timeIn}
-                amount={confirmedBooking.amount}
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4 text-xs text-left bg-[#D4DDE2]/30 p-4 rounded-xl border border-[#D4DDE2]">
-              <div>
-                <p className="text-[#718096]">Slot Reserved:</p>
-                <p className="font-bold text-[#2C3E50]">{confirmedBooking.slotNumber} ({confirmedBooking.zone})</p>
+      <div className="min-h-screen bg-[#F8FAFC] py-4 sm:py-6 px-4 flex items-center justify-center">
+        <div className="max-w-lg w-full">
+          <div className="bg-white p-5 sm:p-6 rounded-2xl border border-[#E2E8F0] shadow-xs space-y-4">
+            
+            {/* Header: Horizontal Flex */}
+            <div className="flex items-center gap-3.5 border-b border-[#E2E8F0] pb-3.5">
+              <div className="w-10 h-10 bg-[#ECFDF5] text-[#16A34A] rounded-xl flex items-center justify-center shrink-0 border border-[#86EFAC]">
+                <CheckCircle2 className="w-6 h-6" />
               </div>
-              <div>
-                <p className="text-[#718096]">Vehicle Plate:</p>
-                <p className="font-mono font-bold text-[#2C3E50]">{confirmedBooking.vehicleNumber}</p>
-              </div>
-              <div>
-                <p className="text-[#718096]">Date & Time:</p>
-                <p className="font-bold text-[#2C3E50]">{confirmedBooking.date} @ {confirmedBooking.timeIn}</p>
-              </div>
-              <div>
-                <p className="text-[#718096]">Total Paid:</p>
-                <p className="font-bold text-[#5C7E8F]">${confirmedBooking.amount.toFixed(2)}</p>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <h1 className="text-lg sm:text-xl font-bold text-[#0F2747] truncate">Spot Reserved Successfully!</h1>
+                  <span className="px-2 py-0.5 rounded bg-[#ECFDF5] text-[#16A34A] text-[11px] font-semibold uppercase shrink-0 border border-[#86EFAC]">
+                    Paid
+                  </span>
+                </div>
+                <p className="text-[12px] text-[#64748B] mt-0.5">
+                  Ref: <span className="font-mono font-semibold text-[#1769E0]">{confirmedBooking.id}</span> • Customer: <span className="font-medium text-[#172B4D]">{confirmedBooking.customerName}</span>
+                </p>
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-3 pt-2">
+            {/* Single Professional QR Code Gate Pass */}
+            <QRTicket
+              bookingId={confirmedBooking.id}
+              slotNumber={confirmedBooking.slotNumber}
+              vehicleNumber={confirmedBooking.vehicleNumber}
+              date={confirmedBooking.date}
+              timeIn={confirmedBooking.timeIn}
+              amount={confirmedBooking.amount}
+              zone={confirmedBooking.zone}
+            />
+
+            {/* Bottom Action Bar */}
+            <div className="flex gap-2.5 pt-1 border-t border-[#E2E8F0]">
               <Link
                 href="/my-bookings"
-                className="flex-1 py-3 px-4 bg-[#5C7E8F] hover:bg-[#4A6776] text-white font-bold text-sm rounded-xl transition shadow-md text-center"
+                className="flex-1 py-2 px-4 bg-[#1769E0] hover:bg-[#1258C4] text-white font-semibold text-[13px] rounded-lg transition shadow-xs text-center flex items-center justify-center gap-1.5"
               >
                 View My Bookings
               </Link>
               <button
                 onClick={() => setConfirmedBooking(null)}
-                className="flex-1 py-3 px-4 bg-white border border-[#D4DDE2] text-[#2C3E50] hover:bg-[#D4DDE2]/40 font-bold text-sm rounded-xl transition text-center"
+                className="flex-1 py-2 px-4 bg-white border border-[#CBD5E1] text-[#172B4D] hover:bg-[#F8FAFC] font-semibold text-[13px] rounded-lg transition text-center"
               >
                 Book Another Slot
               </button>
@@ -210,47 +196,47 @@ function BookSlotContent() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FFFFFF] py-10 px-4 sm:px-6 lg:px-10">
-      <div className="max-w-7xl mx-auto space-y-8">
+    <div className="min-h-screen bg-[#F8FAFC] py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-6xl mx-auto space-y-6">
         
         {/* Top Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 glass-card p-6 sm:p-8 rounded-3xl border border-[#D4DDE2]">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 sm:p-7 rounded-2xl border border-[#E2E8F0] shadow-xs">
           <div>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#5C7E8F]/10 text-[#5C7E8F] text-xs font-bold uppercase tracking-wider mb-2">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-[#EFF6FF] text-[#1769E0] text-[12px] font-semibold uppercase tracking-wider mb-2">
               <Sparkles className="w-3.5 h-3.5" /> Customer Booking Portal
             </span>
-            <h1 className="text-3xl font-black text-[#2C3E50] tracking-tight">Book Your Parking Slot</h1>
-            <p className="text-sm text-[#718096] mt-1">
-              Select a color-coded slot, specify duration, and generate your instant QR entry ticket.
+            <h1 className="text-2xl sm:text-3xl font-bold text-[#0F2747] tracking-tight">Book Your Parking Slot</h1>
+            <p className="text-[14px] text-[#64748B] mt-1">
+              Select an available parking slot, specify reservation hours, and get your digital QR ticket pass.
             </p>
           </div>
 
           <Link
             href="/my-bookings"
-            className="px-5 py-2.5 bg-white border border-[#D4DDE2] text-[#5C7E8F] hover:bg-[#D4DDE2]/40 font-bold text-xs rounded-xl transition shadow-xs flex items-center gap-1.5 self-start md:self-auto"
+            className="px-4 py-2 bg-white border border-[#E2E8F0] text-[#1769E0] hover:bg-[#EFF6FF] font-semibold text-[13px] rounded-lg transition shadow-xs flex items-center gap-1.5 self-start md:self-auto"
           >
             <Clock className="w-4 h-4" /> View My Bookings
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           
           {/* LEFT: VISUAL SLOT SELECTION GRID */}
           <div className="lg:col-span-7 space-y-6">
-            <div className="glass-card p-6 sm:p-8 rounded-3xl border border-[#D4DDE2] shadow-xl space-y-6">
+            <div className="bg-white p-6 rounded-2xl border border-[#E2E8F0] shadow-xs space-y-5">
               
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#D4DDE2]/60">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#E2E8F0]">
                 <div>
-                  <h2 className="text-lg font-bold text-[#2C3E50]">Interactive Slot Selection Map</h2>
-                  <p className="text-xs text-[#718096]">Tap any green slot to choose your parking space.</p>
+                  <h2 className="text-[17px] font-bold text-[#0F2747]">Interactive Slot Selection Map</h2>
+                  <p className="text-[13px] text-[#64748B]">Click any available green slot to choose your parking space.</p>
                 </div>
 
                 {/* Filter Controls */}
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2.5">
                   <select
                     value={filterZone}
                     onChange={(e) => setFilterZone(e.target.value)}
-                    className="bg-white border border-[#D4DDE2] rounded-xl px-3 py-1.5 text-xs font-bold text-[#2C3E50]"
+                    className="bg-[#F8FAFC] border border-[#CBD5E1] rounded-lg px-3 py-1.5 text-[13px] font-medium text-[#172B4D]"
                   >
                     <option value="All">All Zones</option>
                     <option value="Zone A">Zone A</option>
@@ -261,7 +247,7 @@ function BookSlotContent() {
                   <select
                     value={filterType}
                     onChange={(e) => setFilterType(e.target.value)}
-                    className="bg-white border border-[#D4DDE2] rounded-xl px-3 py-1.5 text-xs font-bold text-[#2C3E50]"
+                    className="bg-[#F8FAFC] border border-[#CBD5E1] rounded-lg px-3 py-1.5 text-[13px] font-medium text-[#172B4D]"
                   >
                     <option value="All">All Types</option>
                     <option value="4W">4W (Car)</option>
@@ -271,18 +257,18 @@ function BookSlotContent() {
               </div>
 
               {/* Status Legend */}
-              <div className="flex items-center gap-4 text-xs font-bold bg-[#D4DDE2]/30 p-3 rounded-2xl border border-[#D4DDE2]">
-                <span className="flex items-center gap-1 text-emerald-700">
-                  <span className="w-3 h-3 rounded-full bg-emerald-500" /> Available
+              <div className="flex flex-wrap items-center gap-4 text-[12px] font-medium bg-[#F8FAFC] p-3 rounded-xl border border-[#E2E8F0]">
+                <span className="flex items-center gap-1.5 text-[#15803D]">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#16A34A]" /> Available
                 </span>
-                <span className="flex items-center gap-1 text-[#5C7E8F]">
-                  <span className="w-3 h-3 rounded-full bg-[#5C7E8F]" /> Selected
+                <span className="flex items-center gap-1.5 text-[#1769E0]">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#1769E0]" /> Selected
                 </span>
-                <span className="flex items-center gap-1 text-rose-700">
-                  <span className="w-3 h-3 rounded-full bg-rose-500" /> Occupied
+                <span className="flex items-center gap-1.5 text-[#DC2626]">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#DC2626]" /> Occupied
                 </span>
-                <span className="flex items-center gap-1 text-slate-500">
-                  <span className="w-3 h-3 rounded-full bg-[#A2A2A2]" /> Maintenance
+                <span className="flex items-center gap-1.5 text-[#64748B]">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#94A3B8]" /> Maintenance
                 </span>
               </div>
 
@@ -294,17 +280,17 @@ function BookSlotContent() {
                   const isOccupied = slot.status === 'occupied'
                   const isMaint = slot.status === 'maintenance'
 
-                  let btnStyle = 'bg-emerald-50 text-emerald-900 border-emerald-300 hover:bg-emerald-100'
+                  let btnStyle = 'bg-[#F0FDF4] text-[#15803D] border-[#86EFAC] hover:bg-[#DCFCE7]'
                   let labelText = 'Free'
 
                   if (isSelected) {
-                    btnStyle = 'bg-[#5C7E8F] text-white border-[#4A6776] shadow-md ring-2 ring-[#5C7E8F]/40'
+                    btnStyle = 'bg-[#1769E0] text-white border-[#1769E0] shadow-sm ring-2 ring-[#1769E0]/30'
                     labelText = 'Selected'
                   } else if (isOccupied) {
-                    btnStyle = 'bg-rose-50 text-rose-800 border-rose-200 opacity-60 cursor-not-allowed'
+                    btnStyle = 'bg-[#FEF2F2] text-[#DC2626] border-[#FECACA] opacity-75 cursor-not-allowed'
                     labelText = 'Occupied'
                   } else if (isMaint) {
-                    btnStyle = 'bg-slate-100 text-slate-500 border-slate-300 opacity-60 cursor-not-allowed'
+                    btnStyle = 'bg-[#F8FAFC] text-[#64748B] border-[#CBD5E1] opacity-75 cursor-not-allowed'
                     labelText = 'Maint.'
                   }
 
@@ -313,18 +299,18 @@ function BookSlotContent() {
                       key={slot.id}
                       disabled={!isAvailable && !isSelected}
                       onClick={() => setSelectedSlot(slot)}
-                      className={`p-4 rounded-2xl border text-center font-bold transition flex flex-col justify-between ${btnStyle}`}
+                      className={`p-3.5 rounded-xl border text-center font-semibold transition flex flex-col justify-between ${btnStyle}`}
                     >
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="font-mono font-black text-base">{slot.slotNumber}</span>
-                        <span className="px-1.5 py-0.5 rounded text-[9px] font-extrabold uppercase bg-white/80 border border-current">
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className="font-mono font-bold text-[15px]">{slot.slotNumber}</span>
+                        <span className="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase bg-white/80 border border-current">
                           {slot.vehicleType}
                         </span>
                       </div>
-                      <p className="text-[11px] font-medium opacity-80">{slot.zone}</p>
+                      <p className="text-[12px] font-normal opacity-90">{slot.zone}</p>
                       <div className="mt-2 pt-2 border-t border-current/20 flex items-center justify-between text-[11px]">
-                        <span>${slot.hourlyRate.toFixed(2)}/hr</span>
-                        <span className="font-extrabold">{labelText}</span>
+                        <span>₹{slot.hourlyRate.toFixed(2)}/hr</span>
+                        <span className="font-semibold">{labelText}</span>
                       </div>
                     </button>
                   )
@@ -333,15 +319,15 @@ function BookSlotContent() {
 
               {/* Selected Slot Indicator Banner */}
               {selectedSlot && (
-                <div className="p-4 rounded-2xl bg-[#5C7E8F]/10 border border-[#5C7E8F]/30 flex items-center justify-between text-xs text-[#2C3E50]">
+                <div className="p-3.5 rounded-xl bg-[#EFF6FF] border border-[#E2E8F0] flex items-center justify-between text-[13px] text-[#172B4D]">
                   <div>
-                    <span className="font-bold">Active Selected Slot: </span>
-                    <span className="bg-[#5C7E8F] text-white font-extrabold px-2.5 py-1 rounded-lg text-xs ml-1">
+                    <span className="font-medium">Selected Slot: </span>
+                    <span className="bg-[#1769E0] text-white font-bold px-2 py-0.5 rounded text-[12px] ml-1">
                       {selectedSlot.slotNumber}
                     </span>
-                    <span className="text-[#718096] ml-2">({selectedSlot.zone} • {selectedSlot.vehicleType})</span>
+                    <span className="text-[#64748B] ml-2">({selectedSlot.zone} • {selectedSlot.vehicleType})</span>
                   </div>
-                  <span className="font-bold text-[#5C7E8F] text-sm">${selectedSlot.hourlyRate.toFixed(2)} / hour</span>
+                  <span className="font-bold text-[#1769E0] text-[14px]">₹{selectedSlot.hourlyRate.toFixed(2)} / hr</span>
                 </div>
               )}
 
@@ -350,27 +336,27 @@ function BookSlotContent() {
 
           {/* RIGHT: BOOKING CONFIGURATION FORM & PRICE ESTIMATOR */}
           <div className="lg:col-span-5 space-y-6">
-            <div className="glass-card p-6 sm:p-8 rounded-3xl border border-[#D4DDE2] shadow-xl space-y-6">
+            <div className="bg-white p-6 rounded-2xl border border-[#E2E8F0] shadow-xs space-y-5">
               
-              <div className="pb-4 border-b border-[#D4DDE2]/60">
-                <h2 className="text-lg font-bold text-[#2C3E50]">Reservation Details</h2>
-                <p className="text-xs text-[#718096]">Configure your parking time & vehicle info</p>
+              <div className="pb-4 border-b border-[#E2E8F0]">
+                <h2 className="text-[17px] font-bold text-[#0F2747]">Reservation Details</h2>
+                <p className="text-[13px] text-[#64748B]">Specify vehicle plate and booking hours</p>
               </div>
 
               <form onSubmit={handleConfirmBooking} className="space-y-4">
                 {/* Vehicle Plate Input */}
                 <div>
-                  <label className="block text-xs font-bold text-[#2C3E50] uppercase tracking-wider mb-1">
-                    Vehicle License Plate Number
+                  <label className="block text-[12px] font-semibold text-[#172B4D] uppercase tracking-wider mb-1">
+                    Vehicle License Plate
                   </label>
                   <div className="relative">
-                    <Car className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A2A2A2]" />
+                    <Car className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#94A3B8]" />
                     <input
                       type="text"
                       value={vehicleNumber}
                       onChange={(e) => setVehicleNumber(e.target.value)}
                       placeholder="KA 01 AB 1234"
-                      className="w-full bg-white border border-[#D4DDE2] rounded-xl pl-10 pr-4 py-2.5 text-sm font-bold text-[#2C3E50] uppercase focus:ring-2 focus:ring-[#5C7E8F]"
+                      className="w-full h-11 bg-white border border-[#CBD5E1] rounded-lg pl-9 pr-4 py-2 text-[14px] font-semibold text-[#172B4D] uppercase focus:outline-none focus:border-[#1769E0] focus:ring-1 focus:ring-[#1769E0]"
                       required
                     />
                   </div>
@@ -378,47 +364,47 @@ function BookSlotContent() {
 
                 {/* Booking Date */}
                 <div>
-                  <label className="block text-xs font-bold text-[#2C3E50] uppercase tracking-wider mb-1">
+                  <label className="block text-[12px] font-semibold text-[#172B4D] uppercase tracking-wider mb-1">
                     Parking Date
                   </label>
                   <div className="relative">
-                    <Calendar className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A2A2A2]" />
+                    <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#94A3B8]" />
                     <input
                       type="date"
                       value={bookingDate}
                       onChange={(e) => setBookingDate(e.target.value)}
-                      className="w-full bg-white border border-[#D4DDE2] rounded-xl pl-10 pr-4 py-2.5 text-sm font-semibold text-[#2C3E50] focus:ring-2 focus:ring-[#5C7E8F]"
+                      className="w-full h-11 bg-white border border-[#CBD5E1] rounded-lg pl-9 pr-4 py-2 text-[14px] font-medium text-[#172B4D] focus:outline-none focus:border-[#1769E0] focus:ring-1 focus:ring-[#1769E0]"
                       required
                     />
                   </div>
                 </div>
 
                 {/* Time-In & Duration */}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-bold text-[#2C3E50] uppercase tracking-wider mb-1">
+                    <label className="block text-[12px] font-semibold text-[#172B4D] uppercase tracking-wider mb-1">
                       Time-In
                     </label>
                     <div className="relative">
-                      <Clock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A2A2A2]" />
+                      <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#94A3B8]" />
                       <input
                         type="time"
                         value={timeIn}
                         onChange={(e) => setTimeIn(e.target.value)}
-                        className="w-full bg-white border border-[#D4DDE2] rounded-xl pl-10 pr-3 py-2.5 text-sm font-semibold text-[#2C3E50] focus:ring-2 focus:ring-[#5C7E8F]"
+                        className="w-full h-11 bg-white border border-[#CBD5E1] rounded-lg pl-9 pr-3 py-2 text-[14px] font-medium text-[#172B4D] focus:outline-none focus:border-[#1769E0] focus:ring-1 focus:ring-[#1769E0]"
                         required
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-[#2C3E50] uppercase tracking-wider mb-1">
+                    <label className="block text-[12px] font-semibold text-[#172B4D] uppercase tracking-wider mb-1">
                       Duration
                     </label>
                     <select
                       value={durationHours}
                       onChange={(e) => setDurationHours(Number(e.target.value))}
-                      className="w-full bg-white border border-[#D4DDE2] rounded-xl px-3 py-2.5 text-sm font-semibold text-[#2C3E50] focus:ring-2 focus:ring-[#5C7E8F]"
+                      className="w-full h-11 bg-white border border-[#CBD5E1] rounded-lg px-3 py-2 text-[14px] font-medium text-[#172B4D] focus:outline-none focus:border-[#1769E0] focus:ring-1 focus:ring-[#1769E0]"
                     >
                       <option value={1}>1 Hour</option>
                       <option value={2}>2 Hours</option>
@@ -429,22 +415,22 @@ function BookSlotContent() {
                   </div>
                 </div>
 
-                {/* Cost Calculation Summary Box */}
-                <div className="bg-[#D4DDE2]/30 p-5 rounded-2xl border border-[#D4DDE2] space-y-2.5 text-xs text-[#2C3E50]">
-                  <p className="font-bold uppercase tracking-wider text-[#5C7E8F] border-b border-[#D4DDE2] pb-1.5">
-                    Estimated Cost Calculation
+                {/* Cost Summary Box */}
+                <div className="bg-[#EFF6FF]/60 p-4 rounded-xl border border-[#E2E8F0] space-y-2 text-[13px] text-[#172B4D]">
+                  <p className="font-semibold text-[12px] uppercase tracking-wider text-[#64748B] border-b border-[#E2E8F0] pb-1.5">
+                    Price Calculation
                   </p>
                   <div className="flex justify-between">
-                    <span>Selected Slot Rate ({selectedSlot?.slotNumber})</span>
-                    <span className="font-bold">${selectedSlot?.hourlyRate.toFixed(2)} / hr</span>
+                    <span className="text-[#64748B]">Slot Rate ({selectedSlot?.slotNumber})</span>
+                    <span className="font-semibold">₹{selectedSlot?.hourlyRate.toFixed(2)} / hr</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Selected Duration</span>
-                    <span className="font-bold">{durationHours} Hours</span>
+                    <span className="text-[#64748B]">Duration</span>
+                    <span className="font-semibold">{durationHours} Hours</span>
                   </div>
-                  <div className="border-t border-[#D4DDE2] pt-2 flex justify-between text-base font-black text-[#2C3E50]">
+                  <div className="border-t border-[#E2E8F0] pt-2 flex justify-between text-[15px] font-bold text-[#0F2747]">
                     <span>Total Amount:</span>
-                    <span className="text-[#5C7E8F]">${totalCost.toFixed(2)}</span>
+                    <span className="text-[#1769E0]">₹{totalCost.toFixed(2)}</span>
                   </div>
                 </div>
 
@@ -452,17 +438,17 @@ function BookSlotContent() {
                 <button
                   type="submit"
                   disabled={isProcessing || !selectedSlot}
-                  className="w-full bg-[#5C7E8F] hover:bg-[#4A6776] text-white font-bold py-3.5 px-6 rounded-xl transition shadow-lg flex items-center justify-center gap-2 disabled:opacity-50"
+                  className="w-full h-11 bg-[#1769E0] hover:bg-[#1258C4] text-white font-semibold rounded-lg transition shadow-xs flex items-center justify-center gap-2 text-[14px] disabled:opacity-50"
                 >
                   {isProcessing ? (
                     <>
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                      Generating QR Ticket & Booking...
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Generating Ticket...
                     </>
                   ) : (
                     <>
-                      <CreditCard className="w-5 h-5" />
-                      <span>Confirm & Book (${totalCost.toFixed(2)})</span>
+                      <CreditCard className="w-4 h-4" />
+                      <span>Confirm & Book (₹{totalCost.toFixed(2)})</span>
                     </>
                   )}
                 </button>

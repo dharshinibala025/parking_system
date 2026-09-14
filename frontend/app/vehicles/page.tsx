@@ -73,181 +73,181 @@ function VehiclesContent() {
   }
 
   return (
-    <div className="bg-slate-50 min-h-screen pb-16">
-      
-      {/* Header */}
-      <div className="bg-white border-b border-slate-200/80 py-8 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
+    <div className="bg-[#F8FAFC] min-h-screen py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-6xl mx-auto space-y-6">
+        
+        {/* Header */}
+        <div className="bg-white p-6 sm:p-7 rounded-2xl border border-[#E2E8F0] shadow-xs flex items-center justify-between">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-bold text-[#0F2747] tracking-tight">
               My Saved Vehicles
             </h1>
-            <p className="text-xs text-slate-500 mt-1">
-              Add your vehicles to make booking faster and seamless.
+            <p className="text-[14px] text-[#64748B] mt-1">
+              Manage saved vehicle license plates for fast slot reservations.
             </p>
           </div>
 
           <button
             onClick={() => setIsModalOpen(true)}
-            className="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs rounded-xl shadow-md shadow-blue-500/20 transition flex items-center gap-1.5"
+            className="px-4 py-2.5 bg-[#1769E0] hover:bg-[#1258C4] text-white font-semibold text-[14px] rounded-lg shadow-xs transition flex items-center gap-1.5"
           >
             <Plus className="w-4 h-4" /> Add Vehicle
           </button>
         </div>
-      </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
-        {isLoading ? (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
-          </div>
-        ) : vehicles.length === 0 ? (
-          <div className="bg-white p-12 text-center rounded-3xl border border-slate-200/80 max-w-md mx-auto space-y-3">
-            <Car className="w-12 h-12 text-slate-400 mx-auto" />
-            <h3 className="text-base font-bold text-slate-900">No Vehicles Registered</h3>
-            <p className="text-xs text-slate-500">
-              Add your vehicle details to easily select it during parking slot booking.
-            </p>
-            <button
-              onClick={() => setIsModalOpen(true)}
-              className="px-4 py-2 bg-blue-600 text-white font-semibold text-xs rounded-xl"
-            >
-              Add Your First Vehicle
-            </button>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {vehicles.map((v) => (
-              <div
-                key={v.id}
-                className="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-xs space-y-4 relative flex flex-col justify-between"
+        <div>
+          {isLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="w-7 h-7 text-[#1769E0] animate-spin" />
+            </div>
+          ) : vehicles.length === 0 ? (
+            <div className="bg-white p-10 text-center rounded-2xl border border-[#E2E8F0] shadow-xs max-w-md mx-auto space-y-3">
+              <Car className="w-10 h-10 text-[#94A3B8] mx-auto" />
+              <h3 className="text-[16px] font-bold text-[#0F2747]">No Vehicles Saved Yet</h3>
+              <p className="text-[13px] text-[#64748B]">
+                Add your license plate details to easily select it during parking slot booking.
+              </p>
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className="px-4 py-2 bg-[#1769E0] hover:bg-[#1258C4] text-white font-semibold text-[13px] rounded-lg shadow-xs"
               >
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
-                      <Car className="w-5 h-5" />
-                    </div>
-                    {v.isDefault && (
-                      <span className="px-2.5 py-0.5 bg-blue-100 text-blue-700 text-[10px] font-extrabold rounded-full">
-                        DEFAULT VEHICLE
-                      </span>
-                    )}
-                  </div>
-
-                  <div>
-                    <h3 className="text-xl font-mono font-extrabold text-slate-900">{v.vehicleNumber}</h3>
-                    <p className="text-xs text-slate-500 font-medium">{v.vehicleType} • {v.model || 'Standard'}</p>
-                  </div>
-                </div>
-
-                <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-                  <span className="text-slate-400 font-medium">Color: {v.color || 'White'}</span>
-                  <button
-                    onClick={() => handleDelete(v.id)}
-                    className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
-                    title="Remove vehicle"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Add Vehicle Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-slate-100 space-y-5 animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <h2 className="text-lg font-bold text-slate-900">Add New Vehicle</h2>
-              <button onClick={() => setIsModalOpen(false)} className="p-1 rounded-lg text-slate-400 hover:bg-slate-100">
-                <X className="w-5 h-5" />
+                Add Your First Vehicle
               </button>
             </div>
-
-            <form onSubmit={handleAddVehicle} className="space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Vehicle Number</label>
-                <input
-                  type="text"
-                  placeholder="e.g. KA-01-MJ-4321"
-                  value={vehicleNumber}
-                  onChange={(e) => setVehicleNumber(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono font-bold text-slate-900 uppercase"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Vehicle Type</label>
-                <select
-                  value={vehicleType}
-                  onChange={(e) => setVehicleType(e.target.value as any)}
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-900"
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {vehicles.map((v) => (
+                <div
+                  key={v.id}
+                  className="bg-white rounded-xl p-5 border border-[#E2E8F0] shadow-xs space-y-4 relative flex flex-col justify-between"
                 >
-                  <option value="Car">Car</option>
-                  <option value="Bike">Bike</option>
-                  <option value="SUV">SUV</option>
-                  <option value="EV">EV (Electric Vehicle)</option>
-                </select>
-              </div>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="w-10 h-10 rounded-lg bg-[#EFF6FF] text-[#1769E0] flex items-center justify-center font-bold">
+                        <Car className="w-5 h-5" />
+                      </div>
+                      {v.isDefault && (
+                        <span className="px-2.5 py-0.5 bg-[#EFF6FF] text-[#1769E0] text-[10px] font-bold rounded-md border border-[#1769E0]/20">
+                          DEFAULT VEHICLE
+                        </span>
+                      )}
+                    </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Make / Model</label>
-                <input
-                  type="text"
-                  placeholder="e.g. Honda City"
-                  value={model}
-                  onChange={(e) => setModel(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-900"
-                />
-              </div>
+                    <div>
+                      <h3 className="text-lg font-mono font-bold text-[#0F2747]">{v.vehicleNumber}</h3>
+                      <p className="text-[13px] text-[#64748B] font-medium">{v.vehicleType} • {v.model || 'Standard'}</p>
+                    </div>
+                  </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Color</label>
-                <input
-                  type="text"
-                  placeholder="e.g. White"
-                  value={color}
-                  onChange={(e) => setColor(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-900"
-                />
-              </div>
-
-              <div className="flex items-center gap-2 pt-1">
-                <input
-                  type="checkbox"
-                  id="isDefault"
-                  checked={isDefault}
-                  onChange={(e) => setIsDefault(e.target.checked)}
-                  className="w-4 h-4 text-blue-600 rounded border-slate-300"
-                />
-                <label htmlFor="isDefault" className="text-xs font-semibold text-slate-700">Set as default vehicle</label>
-              </div>
-
-              <div className="pt-3 flex gap-3">
-                <button
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className="w-1/2 py-2.5 bg-slate-100 text-slate-700 font-semibold text-xs rounded-xl"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isSaving}
-                  className="w-1/2 py-2.5 bg-blue-600 text-white font-semibold text-xs rounded-xl shadow-md"
-                >
-                  {isSaving ? 'Saving...' : 'Save Vehicle'}
-                </button>
-              </div>
-            </form>
-          </div>
+                  <div className="pt-3 border-t border-[#E2E8F0] flex items-center justify-between text-[13px]">
+                    <span className="text-[#64748B]">Color: {v.color || 'White'}</span>
+                    <button
+                      onClick={() => handleDelete(v.id)}
+                      className="p-1.5 text-[#94A3B8] hover:text-[#DC2626] hover:bg-[#FEF2F2] rounded-md transition"
+                      title="Remove vehicle"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
-      )}
 
+        {/* Add Vehicle Modal */}
+        {isModalOpen && (
+          <div className="fixed inset-0 z-50 bg-[#0F2747]/40 backdrop-blur-xs flex items-center justify-center p-4">
+            <div className="bg-white rounded-2xl p-6 sm:p-7 max-w-md w-full shadow-lg border border-[#E2E8F0] space-y-5">
+              <div className="flex items-center justify-between border-b border-[#E2E8F0] pb-3">
+                <h2 className="text-[17px] font-bold text-[#0F2747]">Add New Vehicle</h2>
+                <button onClick={() => setIsModalOpen(false)} className="p-1 rounded-md text-[#94A3B8] hover:bg-[#F8FAFC]">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <form onSubmit={handleAddVehicle} className="space-y-4">
+                <div>
+                  <label className="block text-[12px] font-semibold text-[#172B4D] mb-1">Vehicle License Plate</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. KA-01-MJ-4321"
+                    value={vehicleNumber}
+                    onChange={(e) => setVehicleNumber(e.target.value)}
+                    className="w-full h-11 px-3 bg-white border border-[#CBD5E1] rounded-lg text-[14px] font-mono font-bold text-[#172B4D] uppercase focus:outline-none focus:border-[#1769E0] focus:ring-1 focus:ring-[#1769E0]"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[12px] font-semibold text-[#172B4D] mb-1">Vehicle Type</label>
+                  <select
+                    value={vehicleType}
+                    onChange={(e) => setVehicleType(e.target.value as any)}
+                    className="w-full h-11 px-3 bg-white border border-[#CBD5E1] rounded-lg text-[14px] font-medium text-[#172B4D] focus:outline-none focus:border-[#1769E0] focus:ring-1 focus:ring-[#1769E0]"
+                  >
+                    <option value="Car">Car</option>
+                    <option value="Bike">Bike</option>
+                    <option value="SUV">SUV</option>
+                    <option value="EV">EV (Electric Vehicle)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-[12px] font-semibold text-[#172B4D] mb-1">Make / Model</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Honda City"
+                    value={model}
+                    onChange={(e) => setModel(e.target.value)}
+                    className="w-full h-11 px-3 bg-white border border-[#CBD5E1] rounded-lg text-[14px] font-medium text-[#172B4D] focus:outline-none focus:border-[#1769E0] focus:ring-1 focus:ring-[#1769E0]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[12px] font-semibold text-[#172B4D] mb-1">Color</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. White"
+                    value={color}
+                    onChange={(e) => setColor(e.target.value)}
+                    className="w-full h-11 px-3 bg-white border border-[#CBD5E1] rounded-lg text-[14px] font-medium text-[#172B4D] focus:outline-none focus:border-[#1769E0] focus:ring-1 focus:ring-[#1769E0]"
+                  />
+                </div>
+
+                <div className="flex items-center gap-2 pt-1">
+                  <input
+                    type="checkbox"
+                    id="isDefault"
+                    checked={isDefault}
+                    onChange={(e) => setIsDefault(e.target.checked)}
+                    className="w-4 h-4 text-[#1769E0] rounded border-[#CBD5E1]"
+                  />
+                  <label htmlFor="isDefault" className="text-[13px] font-medium text-[#172B4D]">Set as default vehicle</label>
+                </div>
+
+                <div className="pt-2 flex gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setIsModalOpen(false)}
+                    className="w-1/2 h-11 bg-white border border-[#E2E8F0] text-[#172B4D] hover:bg-[#F8FAFC] font-semibold text-[14px] rounded-lg"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isSaving}
+                    className="w-1/2 h-11 bg-[#1769E0] hover:bg-[#1258C4] text-white font-semibold text-[14px] rounded-lg shadow-xs"
+                  >
+                    {isSaving ? 'Saving...' : 'Save Vehicle'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+      </div>
     </div>
   )
 }

@@ -6,14 +6,6 @@ import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
 import { QRTicket } from '@/components/QRTicket'
 import {
   Calendar,
-  Clock,
-  Car,
-  ChevronRight,
-  XCircle,
-  CheckCircle2,
-  AlertCircle,
-  Loader2,
-  Sparkles,
   QrCode,
   X,
 } from 'lucide-react'
@@ -35,7 +27,6 @@ function MyBookingsContent() {
     try {
       const stored = JSON.parse(localStorage.getItem('parkease_bookings') || '[]')
       if (stored.length === 0) {
-        // Seed initial sample booking for testing
         const sample = [
           {
             id: 'BK-894210',
@@ -47,8 +38,8 @@ function MyBookingsContent() {
             date: '2026-09-15',
             timeIn: '10:00',
             durationHours: 2,
-            hourlyRate: 5.0,
-            amount: 10.0,
+            hourlyRate: 50,
+            amount: 100,
             status: 'active',
             createdAt: new Date().toISOString(),
           },
@@ -81,31 +72,31 @@ function MyBookingsContent() {
   })
 
   return (
-    <div className="min-h-screen bg-[#FFFFFF] py-10 px-4 sm:px-6 lg:px-10">
-      <div className="max-w-7xl mx-auto space-y-8">
+    <div className="min-h-screen bg-[#F8FAFC] py-10 px-4 sm:px-6 lg:px-8 text-[#172B4D]">
+      <div className="max-w-7xl mx-auto space-y-6">
         
         {/* Banner Header */}
-        <div className="glass-card p-6 sm:p-8 rounded-3xl border border-[#D4DDE2] shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="saas-card p-6 border border-[#E2E8F0] flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#5C7E8F]/10 text-[#5C7E8F] text-xs font-bold uppercase tracking-wider mb-2">
-              <Sparkles className="w-3.5 h-3.5" /> Customer Reservations
+            <span className="text-[12px] font-semibold uppercase tracking-wider text-[#1769E0]">
+              RESERVATIONS LEDGER
             </span>
-            <h1 className="text-3xl font-black text-[#2C3E50] tracking-tight">My Parking Bookings</h1>
-            <p className="text-sm text-[#718096] mt-1">
+            <h1 className="text-2xl font-bold text-[#0F2747] tracking-tight mt-0.5">My Parking Bookings</h1>
+            <p className="text-xs text-[#64748B] mt-1">
               View digital QR tickets, cancel upcoming reservations, or review past sessions.
             </p>
           </div>
 
           <Link
             href="/book"
-            className="px-6 py-3 bg-[#5C7E8F] hover:bg-[#4A6776] text-white font-bold text-xs rounded-xl shadow-md transition"
+            className="h-[40px] px-5 bg-[#1769E0] hover:bg-[#1258C4] text-white font-semibold text-xs rounded-lg transition shadow-xs flex items-center justify-center"
           >
             + Book New Slot
           </Link>
         </div>
 
         {/* Filter Tabs */}
-        <div className="flex items-center gap-2 border-b border-[#D4DDE2] pb-4 overflow-x-auto">
+        <div className="flex items-center gap-2 border-b border-[#E2E8F0] pb-3 overflow-x-auto">
           {[
             { id: 'all', label: 'All Bookings' },
             { id: 'active', label: 'Active & Upcoming' },
@@ -115,10 +106,10 @@ function MyBookingsContent() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`px-5 py-2.5 rounded-xl text-xs font-bold transition whitespace-nowrap ${
+              className={`px-4 py-2 rounded-lg text-xs font-semibold transition whitespace-nowrap ${
                 activeTab === tab.id
-                  ? 'bg-[#5C7E8F] text-white shadow-md'
-                  : 'bg-[#D4DDE2]/40 text-[#2C3E50] hover:bg-[#D4DDE2]'
+                  ? 'bg-[#1769E0] text-white shadow-xs'
+                  : 'bg-white text-[#64748B] border border-[#E2E8F0] hover:bg-slate-50'
               }`}
             >
               {tab.label}
@@ -128,66 +119,66 @@ function MyBookingsContent() {
 
         {/* Bookings Grid */}
         {filteredBookings.length === 0 ? (
-          <div className="glass-card p-12 text-center rounded-3xl border border-[#D4DDE2] space-y-4 max-w-md mx-auto">
-            <Calendar className="w-10 h-10 text-[#A2A2A2] mx-auto" />
-            <h3 className="text-base font-bold text-[#2C3E50]">No Bookings Found</h3>
-            <p className="text-xs text-[#718096]">
-              There are no parking bookings under this filter category.
+          <div className="saas-card p-10 text-center border border-[#E2E8F0] space-y-3 max-w-sm mx-auto">
+            <Calendar className="size-8 text-[#94A3B8] mx-auto" />
+            <h3 className="text-sm font-semibold text-[#0F2747]">No Bookings Found</h3>
+            <p className="text-xs text-[#64748B]">
+              There are no parking bookings under this category.
             </p>
             <Link
               href="/book"
-              className="inline-block px-5 py-2.5 bg-[#5C7E8F] text-white font-bold text-xs rounded-xl shadow-xs"
+              className="inline-block px-4 py-2 bg-[#1769E0] text-white font-semibold text-xs rounded-lg shadow-xs"
             >
               Book a Slot
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {filteredBookings.map((b) => {
               const isCancelled = b.status === 'cancelled'
               const isCompleted = b.status === 'completed'
-              let badgeStyle = 'bg-emerald-50 text-emerald-700 border-emerald-200'
+              let badgeStyle = 'bg-[#ECFDF5] text-[#16A34A] border-[#86EFAC]'
 
-              if (isCancelled) badgeStyle = 'bg-rose-50 text-rose-700 border-rose-200'
-              if (isCompleted) badgeStyle = 'bg-slate-100 text-slate-700 border-slate-300'
+              if (isCancelled) badgeStyle = 'bg-[#FEF2F2] text-[#DC2626] border-[#FECACA]'
+              if (isCompleted) badgeStyle = 'bg-slate-100 text-[#64748B] border-[#CBD5E1]'
 
               return (
                 <div
                   key={b.id}
-                  className="glass-card rounded-3xl p-6 border border-[#D4DDE2] shadow-sm hover:shadow-xl transition duration-300 flex flex-col justify-between space-y-5"
+                  className="saas-card p-5 border border-[#E2E8F0] flex flex-col justify-between space-y-4"
                 >
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between border-b border-[#D4DDE2]/60 pb-3">
-                      <span className="text-xs font-mono font-bold text-[#5C7E8F]">{b.id}</span>
-                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border uppercase ${badgeStyle}`}>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between border-b border-[#E2E8F0] pb-2.5">
+                      <span className="text-xs font-mono font-bold text-[#1769E0]">{b.id}</span>
+                      <span className={`px-2 py-0.5 rounded text-[10px] font-semibold border uppercase ${badgeStyle}`}>
                         {b.status}
                       </span>
                     </div>
 
                     <div>
-                      <h3 className="text-lg font-black text-[#2C3E50]">Slot {b.slotNumber} ({b.zone || 'Zone A'})</h3>
-                      <p className="text-xs font-semibold text-[#718096] mt-0.5 flex items-center gap-1.5">
-                        <Calendar className="w-3.5 h-3.5 text-[#5C7E8F]" /> {b.date} @ {b.timeIn} ({b.durationHours || 2} hrs)
+                      <h3 className="text-base font-semibold text-[#0F2747]">Slot {b.slotNumber} ({b.zone || 'Zone A'})</h3>
+                      <p className="text-xs text-[#64748B] mt-0.5 flex items-center gap-1">
+                        <Calendar className="size-3.5 text-[#1769E0]" /> {b.date} @ {b.timeIn} ({b.durationHours || 2} hrs)
                       </p>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-2 text-xs bg-[#D4DDE2]/30 p-3 rounded-xl border border-[#D4DDE2]">
+                    <div className="grid grid-cols-2 gap-2 text-xs bg-[#EFF6FF] p-2.5 rounded-lg border border-[#1769E0]/20">
                       <div>
-                        <span className="text-[#718096] text-[10px] block">Vehicle Plate</span>
-                        <span className="font-mono font-bold text-[#2C3E50]">{b.vehicleNumber}</span>
+                        <span className="text-[#64748B] text-[10px] block">Vehicle Plate</span>
+                        <span className="font-mono font-semibold text-[#0F2747]">{b.vehicleNumber}</span>
                       </div>
                       <div>
-                        <span className="text-[#718096] text-[10px] block">Total Paid</span>
-                        <span className="font-bold text-[#5C7E8F]">${Number(b.amount || 0).toFixed(2)}</span>
+                        <span className="text-[#64748B] text-[10px] block">Total Paid</span>
+                        <span className="font-semibold text-[#1769E0]">₹{Number(b.amount || 0).toFixed(2)}</span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="pt-3 border-t border-[#D4DDE2]/60 flex items-center justify-between gap-2">
+                  <div className="pt-3 border-t border-[#E2E8F0] flex items-center justify-between gap-2">
                     {!isCancelled && !isCompleted && (
                       <button
                         onClick={() => handleCancel(b.id)}
-                        className="px-3 py-1.5 border border-rose-300 text-rose-600 hover:bg-rose-50 text-xs font-bold rounded-xl transition"
+                        className="px-2.5 py-1.5 border border-[#FECACA] text-[#DC2626] hover:bg-[#FEF2F2] text-xs font-medium rounded-md transition"
                       >
                         Cancel
                       </button>
@@ -195,9 +186,9 @@ function MyBookingsContent() {
 
                     <button
                       onClick={() => setSelectedTicket(b)}
-                      className="ml-auto px-4 py-2 bg-[#5C7E8F] hover:bg-[#4A6776] text-white font-bold text-xs rounded-xl shadow-xs transition flex items-center gap-1.5"
+                      className="ml-auto px-3.5 py-1.5 bg-[#1769E0] hover:bg-[#1258C4] text-white font-semibold text-xs rounded-md shadow-xs transition flex items-center gap-1.5"
                     >
-                      <QrCode className="w-3.5 h-3.5" /> View Digital QR Ticket
+                      <QrCode className="size-3.5" /> View Ticket
                     </button>
                   </div>
                 </div>
@@ -210,31 +201,31 @@ function MyBookingsContent() {
 
       {/* QR Code Ticket Modal */}
       {selectedTicket && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="glass-card bg-white p-8 rounded-3xl border border-[#D4DDE2] max-w-sm w-full shadow-2xl relative space-y-6 text-center">
-            <button
-              onClick={() => setSelectedTicket(null)}
-              className="absolute top-4 right-4 p-1.5 rounded-full hover:bg-slate-100 text-[#718096]"
-            >
-              <X className="w-5 h-5" />
-            </button>
-
-            <h3 className="text-xl font-black text-[#2C3E50]">Entry/Exit Scanning Pass</h3>
-            
-            <div className="p-4 bg-white rounded-2xl border border-[#D4DDE2] flex flex-col items-center justify-center">
-              <QRTicket
-                bookingId={selectedTicket.id}
-                slotNumber={selectedTicket.slotNumber}
-                vehicleNumber={selectedTicket.vehicleNumber}
-                date={selectedTicket.date}
-                timeIn={selectedTicket.timeIn}
-                amount={selectedTicket.amount}
-              />
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="saas-card bg-white p-5 rounded-2xl border border-[#E2E8F0] max-w-md w-full shadow-lg relative space-y-3.5 text-center">
+            <div className="flex items-center justify-between border-b border-[#E2E8F0] pb-2.5">
+              <h3 className="text-sm font-bold text-[#0F2747]">Parking Digital Gate Pass</h3>
+              <button
+                onClick={() => setSelectedTicket(null)}
+                className="p-1 rounded-md hover:bg-slate-100 text-[#64748B] transition"
+              >
+                <X className="size-4" />
+              </button>
             </div>
+            
+            <QRTicket
+              bookingId={selectedTicket.id}
+              slotNumber={selectedTicket.slotNumber}
+              vehicleNumber={selectedTicket.vehicleNumber}
+              date={selectedTicket.date}
+              timeIn={selectedTicket.timeIn}
+              amount={selectedTicket.amount}
+              zone={selectedTicket.zone}
+            />
 
             <button
               onClick={() => setSelectedTicket(null)}
-              className="w-full py-2.5 bg-[#5C7E8F] hover:bg-[#4A6776] text-white font-bold text-xs rounded-xl transition"
+              className="w-full py-2 bg-white border border-[#CBD5E1] text-[#172B4D] hover:bg-[#F8FAFC] font-semibold text-xs rounded-lg transition"
             >
               Close Ticket
             </button>

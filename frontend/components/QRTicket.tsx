@@ -88,16 +88,14 @@ export function QRTicket(props: QRTicketProps) {
     booking?.id ||
     booking?._id ||
     booking?.qrCode ||
-    'PE-BK-2026-001'
+    'BK-806957'
 
   const ticketSlot = slotNumber || booking?.slotNumber || booking?.slot?.slotNumber || 'A101'
-  const ticketLot = parkingLotName || booking?.parkingLotName || booking?.zone || 'Zone A - Main Garage'
+  const ticketLot = parkingLotName || booking?.parkingLotName || booking?.zone || 'Zone A'
   const ticketDate = bookingDate || date || booking?.bookingDate || booking?.date || '2026-09-15'
   const ticketTimeIn = startTime || timeIn || booking?.startTime || booking?.timeIn || '10:00 AM'
-  const ticketTimeOut = endTime || booking?.endTime || booking?.timeOut || '12:00 PM'
-  const ticketDuration = durationHours || booking?.durationHours || 2
   const ticketVehicle = vehicleNumber || booking?.vehicleNumber || 'KA 01 AB 1234'
-  const ticketAmount = totalAmount ?? amount ?? booking?.totalAmount ?? booking?.amount ?? 10.0
+  const ticketAmount = totalAmount ?? amount ?? booking?.totalAmount ?? booking?.amount ?? 100.0
   const ticketStatus = status || booking?.status || 'active'
 
   const qrGrid = generateQRGrid(refCode)
@@ -109,87 +107,84 @@ export function QRTicket(props: QRTicketProps) {
   }
 
   return (
-    <div className="mx-auto max-w-sm rounded-3xl border-2 border-[#42606F]/20 bg-white p-6 shadow-2xl shadow-[#42606F]/10">
-      {/* Ticket Header */}
-      <div className="flex items-center justify-between border-b border-[#B9C7CF]/60 pb-4">
+    <div className="w-full bg-white rounded-xl border border-[#E2E8F0] p-3.5 sm:p-4 shadow-xs space-y-3 text-left">
+      {/* Pass Header */}
+      <div className="flex items-center justify-between border-b border-[#E2E8F0] pb-2">
         <div className="flex items-center gap-2">
-          <span className="flex size-8 items-center justify-center rounded-lg bg-[#42606F] text-white font-black text-sm shadow-xs">
-            P
+          <span className="flex size-6 items-center justify-center rounded-md bg-[#1769E0] text-white font-bold text-[11px]">
+            <MapPin className="size-3.5" />
           </span>
-          <span className="font-bold tracking-tight text-[#1E2A30]">ParkEase Pass</span>
+          <h3 className="font-bold text-[13px] text-[#0F2747]">ParkEase Gate Pass</h3>
         </div>
-        <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-800 uppercase">
-          <CheckCircle2 className="size-3.5 text-emerald-600" /> {ticketStatus}
+        <span className="inline-flex items-center gap-1 rounded-md bg-[#ECFDF5] px-2 py-0.5 text-[10px] font-semibold text-[#16A34A] border border-[#86EFAC] uppercase">
+          <CheckCircle2 className="size-3 text-[#16A34A]" /> {ticketStatus}
         </span>
       </div>
 
-      {/* QR Code Container */}
-      <div className="my-6 flex flex-col items-center justify-center rounded-2xl border border-dashed border-[#42606F]/40 bg-[#42606F]/5 p-5">
-        <div className="relative p-2 bg-white rounded-xl shadow-md border border-slate-200">
-          <svg width="150" height="150" viewBox="0 0 15 15" className="shape-rendering-crisp">
-            {qrGrid.map((row, r) =>
-              row.map((cell, c) =>
-                cell ? <rect key={`${r}-${c}`} x={c} y={r} width="1" height="1" fill="#1E2A30" /> : null
-              )
-            )}
-          </svg>
+      {/* Body Grid: QR Code Left + Details Right */}
+      <div className="grid grid-cols-12 gap-3 items-center">
+        {/* Left: QR Code */}
+        <div className="col-span-5 sm:col-span-4 flex flex-col items-center justify-center rounded-lg border border-[#E2E8F0] bg-[#EFF6FF]/50 p-2 space-y-1 text-center">
+          <div className="p-1.5 bg-white rounded-md border border-[#E2E8F0] shadow-xs">
+            <svg width="84" height="84" viewBox="0 0 15 15" className="shape-rendering-crisp">
+              {qrGrid.map((row, r) =>
+                row.map((cell, c) =>
+                  cell ? <rect key={`${r}-${c}`} x={c} y={r} width="1" height="1" fill="#0F2747" /> : null
+                )
+              )}
+            </svg>
+          </div>
+          <div>
+            <p className="font-mono text-[11px] font-bold tracking-wider text-[#1769E0]">
+              {refCode}
+            </p>
+            <p className="text-[9px] text-[#64748B] flex items-center justify-center gap-0.5 mt-0.5">
+              <ShieldCheck className="size-2.5 text-[#16A34A]" /> Scan at gate
+            </p>
+          </div>
         </div>
-        <p className="mt-3 font-mono text-sm font-bold tracking-wider text-[#42606F]">
-          {refCode}
-        </p>
-        <p className="mt-1 text-[11px] text-[#7D7D7D] flex items-center gap-1">
-          <ShieldCheck className="size-3 text-emerald-600" /> Scan QR code at parking gate
-        </p>
-      </div>
 
-      {/* Ticket Details List */}
-      <div className="space-y-3 border-t border-[#B9C7CF]/60 pt-4 text-xs">
-        <div className="flex justify-between">
-          <span className="text-[#7D7D7D]">Facility / Zone</span>
-          <span className="font-bold text-[#42606F] flex items-center gap-1">
-            <MapPin className="size-3.5" /> {ticketLot}
-          </span>
-        </div>
-        <div className="flex justify-between">
-          <span className="text-[#7D7D7D]">Assigned Slot</span>
-          <span className="rounded-lg bg-[#42606F] px-2.5 py-0.5 font-bold text-white text-xs">
-            Slot {ticketSlot}
-          </span>
-        </div>
-        <div className="flex justify-between">
-          <span className="text-[#7D7D7D]">Date</span>
-          <span className="font-semibold text-[#1E2A30]">{ticketDate}</span>
-        </div>
-        <div className="flex justify-between">
-          <span className="text-[#7D7D7D]">Time Window</span>
-          <span className="font-semibold text-[#1E2A30]">
-            {ticketTimeIn} – {ticketTimeOut} ({ticketDuration}h)
-          </span>
-        </div>
-        <div className="flex justify-between">
-          <span className="text-[#7D7D7D]">Vehicle</span>
-          <span className="font-semibold text-[#1E2A30] font-mono">{ticketVehicle}</span>
-        </div>
-        <div className="flex justify-between border-t border-[#B9C7CF]/60 pt-3">
-          <span className="font-bold text-[#1E2A30]">Total Paid</span>
-          <span className="font-bold text-emerald-700 text-sm">₹{Number(ticketAmount).toFixed(2)}</span>
+        {/* Right: Details List */}
+        <div className="col-span-7 sm:col-span-8 space-y-1.5 text-[11px]">
+          <div className="flex justify-between items-center">
+            <span className="text-[#64748B]">Assigned Slot</span>
+            <span className="rounded bg-[#1769E0] px-2 py-0.5 font-bold text-white text-[11px]">
+              Slot {ticketSlot}
+            </span>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="text-[#64748B]">Zone</span>
+            <span className="font-semibold text-[#0F2747]">{ticketLot}</span>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="text-[#64748B]">Date & Time</span>
+            <span className="font-semibold text-[#172B4D]">{ticketDate} @ {ticketTimeIn}</span>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="text-[#64748B]">Vehicle Plate</span>
+            <span className="font-mono font-bold text-[#0F2747]">{ticketVehicle}</span>
+          </div>
+          <div className="flex justify-between items-center border-t border-[#E2E8F0] pt-1 text-[12px]">
+            <span className="font-bold text-[#0F2747]">Total Paid</span>
+            <span className="font-bold text-[#1769E0] text-[14px]">₹{Number(ticketAmount).toFixed(2)}</span>
+          </div>
         </div>
       </div>
 
       {/* Action Buttons */}
       {showPrint && (
-        <div className="mt-6 grid grid-cols-2 gap-3">
+        <div className="pt-1 flex gap-2">
           <button
             onClick={handlePrint}
-            className="flex items-center justify-center gap-1.5 rounded-xl border border-[#B9C7CF] bg-slate-50 py-2.5 text-xs font-bold text-[#1E2A30] hover:bg-slate-100 transition"
+            className="flex-1 flex items-center justify-center gap-1.5 rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] hover:bg-[#EFF6FF] py-1.5 text-[11px] font-semibold text-[#172B4D] transition"
           >
-            <Printer className="size-3.5" /> Print
+            <Printer className="size-3 text-[#64748B]" /> Print Pass
           </button>
           <button
             onClick={handlePrint}
-            className="flex items-center justify-center gap-1.5 rounded-xl bg-[#42606F] py-2.5 text-xs font-bold text-white hover:bg-[#354E5A] transition shadow-sm"
+            className="flex-1 flex items-center justify-center gap-1.5 rounded-lg bg-[#1769E0] hover:bg-[#1258C4] py-1.5 text-[11px] font-semibold text-white transition shadow-xs"
           >
-            <Download className="size-3.5" /> Download
+            <Download className="size-3" /> Download
           </button>
         </div>
       )}
