@@ -21,6 +21,7 @@ interface QRTicketProps {
   amount?: number
   status?: string
   showPrint?: boolean
+  zone?: string
 }
 
 // Generate deterministic SVG QR Code grid pattern based on reference string
